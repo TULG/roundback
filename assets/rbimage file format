@@ -1,0 +1,19 @@
+Ideas for the format of the rbimage file.  The rbimage file is going to be used to store file data.
+
+raw binary?  Data about where files begin/end can be stored in the database?
+
+database is backed up regularly, possibly after every change, to ALL storage nodes and stored in
+encrypted format.  The KEY is needed to re-import the file.  Import is a destructive process, erasing the current
+database.  This allows multiple copies of the file data to exist, without keeping a copy in the raw data store itself.
+
+The data store can store the encrypted data manually. (Need a receive function in NetIOHandler that bypasses decryption)
+
+Data File would be un-readable if encrypted, without the key.
+
+rbimage file limit needs to be set to something sane.  Testing will need to be done.  The limit is more of a
+"past this limit, make a new file on next file" so image files could grow beyond the limit if backing up a single file
+bigger than that limit.  The idea is that whole files are always stored in the same rbimage.  A single backed up file
+never spans more than 1 rbimage file.
+
+
+

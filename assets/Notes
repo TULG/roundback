@@ -1,0 +1,56 @@
+Storage Server Parameters:
+- Master Server
+- Starting data port
+- Ending Data Port
+- Client Time out
+
+
+Client Config Parameters:
+- Master Server
+
+
+Master Server Parameters:
+- port
+
+
+backups table:
+- uuid - unique identifier for the backup in question
+- status - enum
+    - 0 - Pending
+    - 1 - Started
+    - 2 - Running
+    - 3 - Completed, Success
+    - 4 - Completed, Error
+- start_time - int
+- end_time - int
+- hid - int - host id.
+
+storageServers table:
+- uuid - unique identifier for the server.
+- ip
+- port
+- type - type of storage the server supports, ie. tape, tar, files, etc.
+- enabled
+- online
+- hbTime - last hb time received.
+
+files table:
+- id - unique auto incrementing
+- mod time
+- crc
+- parentId - for directories, sets the file's parent relationship.
+- type - file, directory, symlink, etc.
+- sServerId - storage Server ID, relates to storageServers table.
+- sServerLocation - Location on the storage server
+
+
+TODO: Correct key storage for encryption.  Should this be part of user input at startup? Perhaps it must be supplied on the commandline?
+TODO: Figure out backup initialization.  Protocol.txt has some information, but how to set up the communication to the storage machine?
+TODO: Initial storage backend. rbimg files? Format? Data Storage? Encryption?
+TODO: Logging for all programs.
+TODO: Storage Server Threading? And how that relates to storage backend? Perhaps:
+TODO:   one rbimg file per thread?
+TODO:   Threads are persistent.
+TODO: Client "round robins" threads for sending files/dirs.
+
+TODO: Solid permissions, acls, attributes handing.  This could be difficult cross platform.

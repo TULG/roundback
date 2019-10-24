@@ -1,0 +1,23 @@
+Client initiating backup:
+- Client tells server it would like to start a backup
+    - SEND backup request <client hostname>
+    - Master
+        - REPLY backup id <id> server <storage server>
+    - send backup start <id> to <storage server>
+    - Storage
+        - send backup verify <id> to master
+        - receive backup verified or backup invalid from master
+        - if backup verified, send backup start ok to client
+        - if backup invalid, send backup start abort to client
+    - FUTURE: negotiate thread count with storage, hard coded to 4 for now.
+    - client scans for files to backup, threaded
+    - as it finds files, send file <file name> modtime <modtime> crc <crc> to <storage server>
+    - storage replies with file dup  or file port <port num>
+        - if file dup, file is already backed up at that version, skip
+        - if file port <port num> use <port num> to start another thread and send the file
+    - client reaches the end of the file list, send backup end to storage.
+        - storage finishes all syncs and sends backup end <id> to master
+        - master records backup end to the db and sends backup end ok <id> to storage
+        - storage sends backup end ok <id> to client
+
+
