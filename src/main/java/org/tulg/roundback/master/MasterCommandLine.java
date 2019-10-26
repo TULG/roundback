@@ -7,10 +7,15 @@ import org.apache.commons.cli.*;
  */
 class MasterCommandLine {
 
-    private final Options options = new Options();
-    private CommandLine commandLine;
+    private static final Options options = new Options();
+    private static CommandLine commandLine;
 
-    public MasterCommandLine(String[] args, MasterConfig masterConfig){
+    public MasterCommandLine(String[] args, MasterConfig masterConfig) throws Exception{
+        Exception e = new Exception("Error: MasterCommandLine is not instantiable.");
+        throw e;
+    }
+
+    private static void initParser(String[] args){
         buildOptions();
         CommandLineParser commandLineParser = new DefaultParser();
 
@@ -27,12 +32,14 @@ class MasterCommandLine {
             printUsage();
         }
 
-        parseToConfig(commandLine, masterConfig);
-
     }
 
+    static public void parseToConfig(String[] args,MasterConfig masterConfig ) {
+        initParser(args);
+        parseToConfig(commandLine, masterConfig);
+    }
 
-    private void parseToConfig(CommandLine commandLine, MasterConfig masterConfig ) {
+    static private void parseToConfig(CommandLine commandLine, MasterConfig masterConfig ) {
         // parse to config
         if(commandLine.hasOption("port")) {
             masterConfig.setPort(commandLine.getOptionValue("port"));
@@ -54,21 +61,21 @@ class MasterCommandLine {
             masterConfig.setEncryptionKey(commandLine.getOptionValue("EncryptionKey"));
         }
 
-        // XXX: This check should be at the end of this function.
+        // This check should be at the end of this function.
         if(commandLine.hasOption("save")) {
             masterConfig.save();
         }
 
     }
 
-    private void printUsage(){
+    static private void printUsage(){
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("master-server",options);
         System.exit(1);
 
     }
 
-    private void buildOptions() {
+    static private void buildOptions() {
         Option tmpOpt;
 
         tmpOpt = Option.builder("p")

@@ -6,7 +6,8 @@ package org.tulg.roundback.master;
 class Main {
     public static void main(String[] args) {
         MasterConfig masterConfig = new MasterConfig();
-        MasterCommandLine masterCommandLine = new MasterCommandLine(args, masterConfig);
+        MasterCommandLine.parseToConfig(args, masterConfig);
+        //MasterCommandLine masterCommandLine = new MasterCommandLine(args, masterConfig);
         MasterNetwork masterNetwork = new MasterNetwork(masterConfig);
         masterNetwork.listen();
 
