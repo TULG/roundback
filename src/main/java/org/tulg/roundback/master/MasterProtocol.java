@@ -135,14 +135,16 @@ class MasterProtocol {
         switch (subCommand.toLowerCase()) {
             case "server":
                 // server should always be a storage server
-                netIOHandler.println("TODO: register remote as server");
+                netIOHandler.println("TODO: register remote as server" + regHost);
+                // TODO: Storage Server Register
                 break;
             case "client":
                 // register a client
-                netIOHandler.println("TODO: register remote as client");
+                netIOHandler.println("TODO: register remote as client" + regHost);
+                // TODO: client register
                 break;
             default:
-                netIOHandler.println("Err: Unknown register type.");
+                netIOHandler.println("Err: Unknown register type for host: " + regHost);
         }
         closeConnection(db);
         return true;
