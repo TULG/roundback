@@ -10,15 +10,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <packaging>jar</packaging>
   <name>RoundBack</name>
   <url>http://github.com/uberlinuxguy/roundback</url>
-  
-<!--
-  <modules>
-    <module>src/main/java/org/tulg/roundback/core</module>
-    <module>src/main/java/org/tulg/roundback/master</module>
-    <module>src/main/java/org/tulg/roundback/client</module>
-    <module>src/main/java/org/tulg/roundback/storage</module>
-  </modules>
- -->
+
   <dependencies>
     
     <dependency>  
