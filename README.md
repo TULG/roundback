@@ -18,9 +18,10 @@ the code needed to run the three components of RoundBack:
     - org.tulg.roundback.master - the master server.  Handles the DB and schedules/handles backups/restore jobs.
     - org.tulg.roundback.storage - the storage server.  Clients connect here to store files. master keeps track of them
     in the database
+    - org.tulg.roundback.client - houses the main network protocol stack for the client.
+
 
 Currently De-Scoped:
-    - org.tulg.roundback.client - houses the main network protocol stack for the client.
     - org.tulg.roundback.testClient - used internally for development purposes.
     - org.tulg.roundback.rbadmin - administrative interface for admining the master server.
     
