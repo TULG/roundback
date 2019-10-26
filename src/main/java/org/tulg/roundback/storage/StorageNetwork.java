@@ -42,9 +42,8 @@ class StorageNetwork {
         // Start listening.
         Socket clientSock;
         System.out.println("Server Started on port: " + port);
-        // Someone connected, start a thread to handle the connection
-        ExecutorService executor = Executors.newFixedThreadPool(5); // TODO: this probably goes outside the loop
-
+        
+        ExecutorService executor = Executors.newFixedThreadPool(5); 
         while(!quitting) {
             try {
                 clientSock = socket.accept();
@@ -53,7 +52,7 @@ class StorageNetwork {
                 // Set up the thread.
                 StorageThread clientThread = new StorageThread(clientSock);
                 clientThread.setStorageConfig(storageConfig);
-
+                // Someone connected, start a thread to handle the connection
                 executor.execute(clientThread);
                 System.out.println("Accepted connection: " +
                         clientSock.getInetAddress().getHostAddress() + ":" +
