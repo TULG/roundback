@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.tulg.roundback.core.RoundBackConfig;
+
 /**
  * Created by jasonw on 4/25/2017.
  */
@@ -14,18 +16,18 @@ class StorageNetwork {
     private ServerSocket socket;
     private int port;
     private final boolean quitting;
-    private final StorageConfig storageConfig;
+    private final RoundBackConfig rBackConfig;
 
-    public StorageNetwork(StorageConfig config){
+    public StorageNetwork(RoundBackConfig rBackConfig){
         port=2378;
 
-        port = Integer.parseInt(config.getPort(),10);
+        port = Integer.parseInt(rBackConfig.getStoragePort(),10);
         if(port == 0) {
             port = 2378;
         }
         quitting=false;
 
-        storageConfig = config;
+        this.rBackConfig = rBackConfig;
 
     }
 
@@ -51,7 +53,7 @@ class StorageNetwork {
 
                 // Set up the thread.
                 StorageThread clientThread = new StorageThread(clientSock);
-                clientThread.setStorageConfig(storageConfig);
+                clientThread.setRoundBackConfig(rBackConfig);
                 // Someone connected, start a thread to handle the connection
                 executor.execute(clientThread);
                 System.out.println("Accepted connection: " +

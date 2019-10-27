@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.tulg.roundback.core.RoundBackConfig;
+
 /**
  * Created by jasonw on 10/7/2016.
  */
@@ -13,12 +15,12 @@ class MasterNetwork {
     private ServerSocket socket;
     private int port;
     private final boolean quitting;
-    private final MasterConfig masterConfig;
+    private final RoundBackConfig masterConfig;
 
-    public MasterNetwork(MasterConfig config){
+    public MasterNetwork(RoundBackConfig config){
         port=2377;
 
-        port = Integer.parseInt(config.getPort(),10);
+        port = Integer.parseInt(config.getMasterPort(),10);
         if(port == 0) {
             port = 2377;
         }
@@ -50,7 +52,7 @@ class MasterNetwork {
 
                 // Set up the thread.
                 MasterThread clientThread = new MasterThread(clientSock);
-                clientThread.setMasterConfig(masterConfig);
+                clientThread.setRoundBackConfig(masterConfig);
 
                 executor.execute(clientThread);
                 System.out.println("Accepted connection: " +

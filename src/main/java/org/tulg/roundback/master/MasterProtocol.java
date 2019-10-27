@@ -3,6 +3,7 @@ package org.tulg.roundback.master;
 import org.tulg.roundback.core.BackupStatus;
 import org.tulg.roundback.core.Encrypter;
 import org.tulg.roundback.core.NetIOHandler;
+import org.tulg.roundback.core.RoundBackConfig;
 
 import java.io.IOException;
 import java.sql.*;
@@ -20,7 +21,7 @@ class MasterProtocol {
     private NetIOHandler netIOHandler = null;
     private boolean adminSession = false;
     private long adminSessionStart = 0;
-    private MasterConfig masterConfig;
+    private RoundBackConfig rBackConfig;
 
 
     public MasterProtocol (NetIOHandler netIOHandler){
@@ -343,7 +344,7 @@ class MasterProtocol {
     public boolean authenticateAdmin(String password) {
 
         // TODO: For now, admin pass can be the same as encryption key.
-        String key = masterConfig.getEncryptionKey();
+        String key = rBackConfig.getEncryptionKey();
         if(password.equals(key)) {
             adminSessionStart = System.currentTimeMillis() / 1000L;
             adminSession = true;
@@ -371,11 +372,11 @@ class MasterProtocol {
         return false;
     }
 
-    public MasterConfig getMasterConfig() {
-        return masterConfig;
+    public RoundBackConfig getRoundBackConfig() {
+        return rBackConfig;
     }
 
-    public void setMasterConfig(MasterConfig masterConfig) {
-        this.masterConfig = masterConfig;
+    public void setRoundBackConfig(RoundBackConfig rBackConfig) {
+        this.rBackConfig = rBackConfig;
     }
 }

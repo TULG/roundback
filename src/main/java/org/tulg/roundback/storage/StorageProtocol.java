@@ -1,6 +1,7 @@
 package org.tulg.roundback.storage;
 
 import org.tulg.roundback.core.NetIOHandler;
+import org.tulg.roundback.core.RoundBackConfig;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -13,7 +14,7 @@ class StorageProtocol {
     private NetIOHandler netIOHandler = null;
     private boolean adminSession = false;
     private long adminSessionStart = 0;
-    private StorageConfig storageConfig;
+    private RoundBackConfig rBackConfig;
 
 
     public StorageProtocol(NetIOHandler netIOHandler) {
@@ -104,12 +105,12 @@ class StorageProtocol {
     }
 
 
-    public StorageConfig getStorageConfig() {
-        return storageConfig;
+    public RoundBackConfig getStorageConfig() {
+        return rBackConfig;
     }
 
-    public void setStorageConfig(StorageConfig storageConfig) {
-        this.storageConfig = storageConfig;
+    public void setRoundBackConfig(RoundBackConfig rBackConfig) {
+        this.rBackConfig = rBackConfig;
     }
 
 
@@ -158,7 +159,7 @@ class StorageProtocol {
     public boolean authenticateAdmin(String password) {
 
         // TODO: For now, admin pass can be the same as encryption key.
-        String key = storageConfig.getEncryptionKey();
+        String key = rBackConfig.getEncryptionKey();
         if(password.equals(key)) {
             adminSessionStart = System.currentTimeMillis() / 1000L;
             adminSession = true;
