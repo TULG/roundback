@@ -1,7 +1,7 @@
 package org.tulg.roundback.storage;
 
-
 import org.apache.commons.cli.*;
+import org.tulg.roundback.core.RoundBackConfig;
 
 
 /**
@@ -11,7 +11,7 @@ class StorageCommandLine {
     private final Options options = new Options();
     private CommandLine commandLine;
 
-    public StorageCommandLine(String[] args, StorageConfig storageConfig){
+    public StorageCommandLine(String[] args, RoundBackConfig rBackConfig){
         buildOptions();
         CommandLineParser commandLineParser = new DefaultParser();
 
@@ -28,34 +28,34 @@ class StorageCommandLine {
             printUsage();
         }
 
-        parseToConfig(commandLine, storageConfig);
+        parseToConfig(commandLine, rBackConfig);
 
     }
 
-    private void parseToConfig(CommandLine commandLine, StorageConfig storageConfig ) {
+    private void parseToConfig(CommandLine commandLine, RoundBackConfig rBackConfig ) {
         // parse to config
         if(commandLine.hasOption("port")) {
-            storageConfig.setPort(commandLine.getOptionValue("port"));
+            rBackConfig.setStoragePort(commandLine.getOptionValue("port"));
         }
 
         if(commandLine.hasOption("maxThreads")){
-            storageConfig.setMaxThreads(Integer.valueOf(commandLine.getOptionValue("maxThreads")));
+            rBackConfig.setMaxThreads(Integer.valueOf(commandLine.getOptionValue("maxThreads")));
         }
 
         if(commandLine.hasOption("maxDataPort")){
-            storageConfig.setMaxDataPort(Integer.valueOf(commandLine.getOptionValue("maxDataPort")));
+            rBackConfig.setMaxDataPort(Integer.valueOf(commandLine.getOptionValue("maxDataPort")));
         }
 
         if(commandLine.hasOption("minDataPort")){
-            storageConfig.setMinDataPort(Integer.valueOf(commandLine.getOptionValue("minDataPort")));
+            rBackConfig.setMinDataPort(Integer.valueOf(commandLine.getOptionValue("minDataPort")));
         }
 
         if(commandLine.hasOption("UseEncryption")){
             if(commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("y") == 0 ){
-                storageConfig.setEncrypted(true);
+                rBackConfig.setEncrypted(true);
             } else {
                 if (commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("n") == 0) {
-                    storageConfig.setEncrypted(false);
+                    rBackConfig.setEncrypted(false);
                 } else {
                     System.err.println("Error: Unrecognized argument to 'UseEncryption'");
                 }
@@ -63,12 +63,12 @@ class StorageCommandLine {
         }
 
         if(commandLine.hasOption("EncryptionKey")){
-            storageConfig.setEncryptionKey(commandLine.getOptionValue("EncryptionKey"));
+            rBackConfig.setEncryptionKey(commandLine.getOptionValue("EncryptionKey"));
         }
 
         // XXX: This check should be at the end of this function.
         if(commandLine.hasOption("save")) {
-                storageConfig.save();
+                rBackConfig.save();
         }
 
 

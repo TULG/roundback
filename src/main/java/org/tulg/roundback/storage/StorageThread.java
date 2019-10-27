@@ -1,6 +1,7 @@
 package org.tulg.roundback.storage;
 
 import org.tulg.roundback.core.NetIOHandler;
+import org.tulg.roundback.core.RoundBackConfig;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -13,7 +14,7 @@ public class StorageThread implements  Runnable {
     private boolean quitting;
     private final StorageProtocol sProto;
     private NetIOHandler netIOHandler = null;
-    private StorageConfig storageConfig = null;
+    private RoundBackConfig rBackConfig = null;
 
     public StorageThread(Socket clientSock){
         this.clientSock = clientSock;
@@ -28,16 +29,16 @@ public class StorageThread implements  Runnable {
     }
 
 
-    public void setStorageConfig(StorageConfig storageConfig) {
-        this.storageConfig = storageConfig;
-        sProto.setStorageConfig(storageConfig);
+    public void setRoundBackConfig(RoundBackConfig rBackConfig) {
+        this.rBackConfig = rBackConfig;
+        sProto.setRoundBackConfig(rBackConfig);
 
     }
 
     @Override
     public void run() {
-        netIOHandler.setEncrypted(storageConfig.getEncrypted());
-        netIOHandler.setEncryptionKey(storageConfig.getEncryptionKey());
+        netIOHandler.setEncrypted(rBackConfig.getEncrypted());
+        netIOHandler.setEncryptionKey(rBackConfig.getEncryptionKey());
         netIOHandler.setClientAddress(clientSock.getInetAddress().getHostAddress());
         try {
             netIOHandler.setIn(clientSock.getInputStream());

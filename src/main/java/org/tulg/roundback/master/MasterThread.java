@@ -1,6 +1,7 @@
 package org.tulg.roundback.master;
 
 import org.tulg.roundback.core.NetIOHandler;
+import org.tulg.roundback.core.RoundBackConfig;
 
 import java.io.*;
 import java.net.Socket;
@@ -13,7 +14,7 @@ class MasterThread implements Runnable {
     private boolean quitting;
     private final MasterProtocol mProto;
     private NetIOHandler netIOHandler = null;
-    private MasterConfig masterConfig = null;
+    private RoundBackConfig rBackConfig = null;
 
     public MasterThread(Socket clientSock){
         this.clientSock = clientSock;
@@ -28,16 +29,16 @@ class MasterThread implements Runnable {
     }
 
 
-    public void setMasterConfig(MasterConfig masterConfig) {
-        this.masterConfig = masterConfig;
-        mProto.setMasterConfig(masterConfig);
+    public void setRoundBackConfig(RoundBackConfig rBackConfig) {
+        this.rBackConfig = rBackConfig;
+        mProto.setRoundBackConfig(rBackConfig);
 
     }
 
     @Override
     public void run() {
-        netIOHandler.setEncrypted(masterConfig.getEncrypted());
-        netIOHandler.setEncryptionKey(masterConfig.getEncryptionKey());
+        netIOHandler.setEncrypted(rBackConfig.getEncrypted());
+        netIOHandler.setEncryptionKey(rBackConfig.getEncryptionKey());
         netIOHandler.setClientAddress(clientSock.getInetAddress().getHostAddress());
         try {
             netIOHandler.setIn(clientSock.getInputStream());

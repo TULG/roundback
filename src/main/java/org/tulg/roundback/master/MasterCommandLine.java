@@ -1,6 +1,7 @@
 package org.tulg.roundback.master;
 
 import org.apache.commons.cli.*;
+import org.tulg.roundback.core.RoundBackConfig;
 
 /**
  * Created by jasonw on 9/24/2016.
@@ -10,7 +11,7 @@ class MasterCommandLine {
     private static final Options options = new Options();
     private static CommandLine commandLine;
 
-    public MasterCommandLine(String[] args, MasterConfig masterConfig) throws Exception{
+    public MasterCommandLine(String[] args, RoundBackConfig rBackConfig) throws Exception{
         Exception e = new Exception("Error: MasterCommandLine is not instantiable.");
         throw e;
     }
@@ -34,23 +35,23 @@ class MasterCommandLine {
 
     }
 
-    static public void parseToConfig(String[] args,MasterConfig masterConfig ) {
+    static public void parseToConfig(String[] args,RoundBackConfig rBackConfig ) {
         initParser(args);
-        parseToConfig(commandLine, masterConfig);
+        parseToConfig(commandLine, rBackConfig);
     }
 
-    static private void parseToConfig(CommandLine commandLine, MasterConfig masterConfig ) {
+    static private void parseToConfig(CommandLine commandLine, RoundBackConfig rBackConfig ) {
         // parse to config
         if(commandLine.hasOption("port")) {
-            masterConfig.setPort(commandLine.getOptionValue("port"));
+            rBackConfig.setMasterPort(commandLine.getOptionValue("port"));
         }
 
         if(commandLine.hasOption("UseEncryption")){
             if(commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("y") == 0 ){
-                masterConfig.setEncrypted(true);
+                rBackConfig.setEncrypted(true);
             } else {
                 if (commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("n") == 0) {
-                    masterConfig.setEncrypted(false);
+                    rBackConfig.setEncrypted(false);
                 } else {
                     System.err.println("Error: Unrecognized argument to 'UseEncryption'");
                 }
@@ -58,12 +59,12 @@ class MasterCommandLine {
         }
 
         if(commandLine.hasOption("EncryptionKey")){
-            masterConfig.setEncryptionKey(commandLine.getOptionValue("EncryptionKey"));
+            rBackConfig.setEncryptionKey(commandLine.getOptionValue("EncryptionKey"));
         }
 
         // This check should be at the end of this function.
         if(commandLine.hasOption("save")) {
-            masterConfig.save();
+            rBackConfig.save();
         }
 
     }
