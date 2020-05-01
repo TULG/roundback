@@ -10,9 +10,10 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 /**
+ * Encrypter - Handles encryption and decrytion of strings and byte arrays.
  * @author Jason Williams <jasonw@tulg.org>
  *
- * class Encrypter - Handles encryption and decrytion of strings and byte arrays.
+ * 
  */
 public class Encrypter {
 

@@ -1,10 +1,13 @@
 package org.tulg.roundback.core;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.Objects;
 
 /**
- * Created by jasonw on 5/25/2017.
+ * Handles the actual socket I/O for an established network connection.
+ * 
+ * @author Jason Williams
  */
 public class NetIOHandler {
     private PrintStream out = null;
@@ -14,12 +17,26 @@ public class NetIOHandler {
     private String clientAddress;
 
     public NetIOHandler(OutputStream outputStream, InputStream inputStream) {
-        out = new PrintStream(outputStream,true);
+        out = new PrintStream(outputStream, true);
         in = new BufferedReader(new InputStreamReader(inputStream));
 
     }
-    public NetIOHandler(){
 
+    public NetIOHandler() {
+
+    }
+
+    public NetIOHandler(Socket remoteSocket, boolean isEncrypted) {
+
+        try {
+            out = new PrintStream(remoteSocket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(remoteSocket.getInputStream()));
+
+        } catch (IOException e) {
+            Logger.log(Logger.LOG_LEVEL_CRITICAL, "Unable to setup networking.");
+            System.exit(1);
+        }
+        this.isEncrypted = isEncrypted;
     }
 
     public NetIOHandler(OutputStream outputStream, InputStream inputStream, boolean isEncrypted) {
@@ -69,14 +86,21 @@ public class NetIOHandler {
         this.encryptionKey = encryptionKey;
     }
 
+    /**
+     * prints a line back to the client, with optional encryption.
+     *
+     * @param  string   the data to send back to the client.
+     * 
+     */
     public void println(String string) throws IOException {
         if(out == null) {
             throw new IOException("Cannot open output stream");
         }
         if(isEncrypted) {
             if(Objects.equals(encryptionKey, "")){
-                System.err.println("Error: encryptionKey not set but encryption requested.");
-                System.err.println("Error: network writes will fail!");
+                Logger.log(Logger.LOG_LEVEL_ERROR, "encryptionKey not set but encryption requested.");
+                Logger.log(Logger.LOG_LEVEL_ERROR, "network writes will fail!");
+                throw new IOException("Encryption requested, but no key set!");
             } else {
                 out.println(Encrypter.encrypt(encryptionKey, Encrypter.getIVBytes(), string));
             }
@@ -86,6 +110,11 @@ public class NetIOHandler {
 
     }
 
+    /**
+     * Read a line of data from the client
+     *
+     * @return  The data from the client, in a String
+     */
     public String readLine() throws IOException {
         if(in == null) {
             throw new IOException("Cannot open input  stream");
@@ -93,8 +122,9 @@ public class NetIOHandler {
         try {
             if (isEncrypted) {
                 if(Objects.equals(encryptionKey, "")) {
-                    System.err.println("Error: encryptionKey not set but encryption requested.");
-                    System.err.println("Error: network reads will fail!");
+                    Logger.log(Logger.LOG_LEVEL_ERROR, "encryptionKey not set but encryption requested.");
+                    Logger.log(Logger.LOG_LEVEL_ERROR, "network reads will fail!");
+                    throw new IOException("Encryption requested, but no key set!");
                 } else {
                     String inLine = in.readLine();
                     if(inLine == null)
@@ -105,10 +135,8 @@ public class NetIOHandler {
                 return in.readLine();
             }
         } catch (IOException e) {
-            //System.err.println("Error: Error reading input stream. Empty string returned.");
             throw new IOException("Input Stream Disconnected");
         }
-        return "";
     }
 
     public void flush() {

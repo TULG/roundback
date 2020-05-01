@@ -1,6 +1,7 @@
 package org.tulg.roundback.master;
 
 import org.apache.commons.cli.*;
+import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.RoundBackConfig;
 
 /**
@@ -16,6 +17,13 @@ class MasterCommandLine {
         throw e;
     }
 
+    /**
+     * Parse the commandline options into the MasterConfig
+     * object passed in
+     *
+     * @param  args         commandline string to parse.
+     * @param  masterConfig the config to populate with the options
+     */
     private static void initParser(String[] args){
         buildOptions();
         CommandLineParser commandLineParser = new DefaultParser();
@@ -24,7 +32,7 @@ class MasterCommandLine {
         try {
             commandLine = commandLineParser.parse(options, args);
         } catch (ParseException e) {
-            System.err.println(e.getMessage());
+            Logger.log(Logger.LOG_LEVEL_CRITICAL, e.getMessage());
             printUsage();
             //e.printStackTrace();
         }
@@ -35,12 +43,12 @@ class MasterCommandLine {
 
     }
 
-    static public void parseToConfig(String[] args,RoundBackConfig rBackConfig ) {
+    public static void parseToConfig(String[] args,RoundBackConfig rBackConfig ) {
         initParser(args);
         parseToConfig(commandLine, rBackConfig);
     }
 
-    static private void parseToConfig(CommandLine commandLine, RoundBackConfig rBackConfig ) {
+    private static void parseToConfig(CommandLine commandLine, RoundBackConfig rBackConfig ) {
         // parse to config
         if(commandLine.hasOption("port")) {
             rBackConfig.setMasterPort(commandLine.getOptionValue("port"));
@@ -53,7 +61,7 @@ class MasterCommandLine {
                 if (commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("n") == 0) {
                     rBackConfig.setEncrypted(false);
                 } else {
-                    System.err.println("Error: Unrecognized argument to 'UseEncryption'");
+                    Logger.log(Logger.LOG_LEVEL_ERROR, "Unrecognized argument to 'UseEncryption'");
                 }
             }
         }
@@ -69,14 +77,14 @@ class MasterCommandLine {
 
     }
 
-    static private void printUsage(){
+    private static void printUsage(){
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("master-server",options);
         System.exit(1);
 
     }
 
-    static private void buildOptions() {
+    private static void buildOptions() {
         Option tmpOpt;
 
         tmpOpt = Option.builder("p")
@@ -93,7 +101,7 @@ class MasterCommandLine {
                 .numberOfArgs(1)
                 .required(false)
                 .type(boolean.class)
-                .desc("Should we use encryption")
+                .desc("<y|n> - Should we use encryption")
                 .build();
         options.addOption(tmpOpt);
 
@@ -106,7 +114,7 @@ class MasterCommandLine {
                 .build();
         options.addOption(tmpOpt);
 
-        // XXX: Add new option blocks here.
+        // Add new option blocks here.
 
         tmpOpt = Option.builder("s")
                 .longOpt("save")

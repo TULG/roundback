@@ -54,3 +54,87 @@ TODO:   Threads are persistent.
 TODO: Client "round robins" threads for sending files/dirs.
 
 TODO: Solid permissions, acls, attributes handing.  This could be difficult cross platform.
+
+
+Core Objects (with structure):
+    - BackupJobSchedule
+        - uuid - unique identifier for the entry
+        - start_every_minute - future: cron type scheduling
+        - start_every_hour - cron type scheduling, or simple scheduling hour, defaults to 2am
+        - start_every_day - future: cron type scheduling, day of the month
+        - start_every_month - future: cron type scheduling, month of the year 1:jan through 12:dec
+        - start_every_weekday - future: cron type scheduling, day of the week.
+        - start_every - simple scheduling
+            - hourly - runs at top of the hour, every hour.
+            - daily - runs every day at 2am.
+            - weekly - runs every sunday at 2am.
+            - monthly - runs the first day of every month at 2am.
+        - next_run - the server's best guess when next to run this BackupJobSchedule
+        - type - type of backup to run
+            - full
+            - incremental
+        - hid - the host id of the client to run for.
+
+    - BackupJob
+        - uuid - unique identifier for the entry
+        - start_time - when did the job start
+        - end_time - when did the job end 
+        - start_by - client or server? Maybe a UUID linking to who initiated it?
+        - status - current status of the job
+            - 0 - Pending
+            - 1 - Started
+            - 2 - Running
+            - 3 - Completed, Success
+            - 4 - Completed, Error
+        - size - full size of the backup
+        
+    - BackupItem
+        - uuid - unique identifier for the entry
+        - jobid - what job this item came from
+        - path - what was the original full path
+        - type - file type 
+            - symlink
+            - directory
+            - file
+            - device
+        - dev_major - if a device, it's major num
+        - dev_minor - if a device, it's minor num
+        - link_dest - if a link, it's target file or inode number
+        - mode - linux/unix mode permissions
+        - user - linux/unix owner
+        - group - linux/unix group
+        - media_id - what media is this file kept on 
+        - media_start_block - where is the start block for this file
+        - media_end_block - where is the end block of this file
+        - media_server - id of what server was this file stored on
+        - size - the file's original size.
+        - crc - a quick crc for the file, performed on the client before sending.
+        - mtime - future: mod time
+        - atime - future: if enabled, access time
+        - ctime - future: if enabled, create time
+
+    - Media
+        - uuid - unique identifier for the entry
+        - label - name of the piece of media
+        - type - type of media
+            - rbimage file
+            - future: tape
+        - size - size of the media
+        - used - amount of used space on the media
+
+
+    - NetEndpoints
+        - uuid - unique identifier for the entry
+        - hostname  - the FQDN of this enpoint.
+        - ip - the address of this endopoint.
+        - port - the port this server runs on
+        - type - what type of endpoint is this  
+            - client
+            - storage
+            - master
+        - backing_store - if storage, what backing stores it supports
+        - enabled - if this server is enabled or not
+        - online - if this server is online or not
+        - hb_time - the last time we recieved a heartbeat from this endpoint
+
+
