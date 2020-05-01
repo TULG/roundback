@@ -1,5 +1,6 @@
 package org.tulg.roundback.master;
 
+import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
 
@@ -15,26 +16,36 @@ class MasterThread implements Runnable {
     private final MasterProtocol mProto;
     private NetIOHandler netIOHandler = null;
     private RoundBackConfig rBackConfig = null;
-
+/*
     public MasterThread(Socket clientSock){
         this.clientSock = clientSock;
         quitting = false;
         netIOHandler = new NetIOHandler();
         mProto = new MasterProtocol(netIOHandler);
 
+    }*/
+
+    public MasterThread(Socket clientSock, RoundBackConfig config){
+        this.clientSock = clientSock;
+        quitting = false;
+        rBackConfig = config;
+        netIOHandler = new NetIOHandler(clientSock, rBackConfig.getEncrypted());
+        mProto = new MasterProtocol(netIOHandler, config);
+
     }
 
+    /*
     public void setClientSock(Socket clientSock) {
         this.clientSock = clientSock;
     }
 
 
-    public void setRoundBackConfig(RoundBackConfig rBackConfig) {
-        this.rBackConfig = rBackConfig;
-        mProto.setRoundBackConfig(rBackConfig);
+    public void setMasterConfig(MasterConfig masterConfig) {
+        this.masterConfig = masterConfig;
+        mProto.setMasterConfig(masterConfig);
 
     }
-
+*/
     @Override
     public void run() {
         netIOHandler.setEncrypted(rBackConfig.getEncrypted());
@@ -45,7 +56,7 @@ class MasterThread implements Runnable {
             netIOHandler.setOut(clientSock.getOutputStream());
             netIOHandler.println("RoundBack Master Server");
         } catch (IOException e) {
-            System.err.println("Error: Cannot open input stream");
+            Logger.log(Logger.LOG_LEVEL_CRITICAL, "Cannot open input stream");
             quitting = true;
         }
 
@@ -54,14 +65,13 @@ class MasterThread implements Runnable {
         // listen until we quit
         while(!quitting) {
             try {
-
-                    inputLine = netIOHandler.readLine();
-                    if(!mProto.process(inputLine)){
-                        quitting=true;
-                    }
+                inputLine = netIOHandler.readLine();
+                if(!mProto.process(inputLine)){
+                    quitting=true;
+                }
 
             } catch (IOException e) {
-                System.err.println("Exception: " + e.getMessage());
+                Logger.log(Logger.LOG_LEVEL_CRITICAL, "Exception: " + e.getMessage());
                 quitting = true;
             }
 
@@ -73,6 +83,5 @@ class MasterThread implements Runnable {
         } catch (IOException e) {
             // ignore exception on close.
         }
-
     }
 }
