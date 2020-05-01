@@ -28,4 +28,4 @@ Currently De-Scoped:
 
 I am currently considering re-starting work on the project, and here is a list of minimum features for a 0.1 release:
 
-https://docs.google.com/document/d/1L0mtkv1QnU8Trls0iZhqizj2jGqEbVpEiKwLoR3A0L8/edit
+https://github.com/TULG/roundback/wiki/RoundBack-v0.1-Minimum-Viable-Product-Specification
