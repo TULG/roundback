@@ -50,7 +50,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <executions>
 				  <execution>
 					<id>make-assembly</id>
-          <!-- bind to the packaging phase -->
+                                        <!-- bind to the packaging phase -->
 					<phase>package</phase> 
 					<goals>
 						<goal>single</goal>
