@@ -33,7 +33,7 @@ public class RoundBackObject {
         }
 
         if(this.table == "") {
-            Logger.log(Logger.LOG_LEVEL_CRITICAL, "Invalid invocation of initializeDB(), table must be set by child class");
+            Logger.log(Logger.LOG_LEVEL_CRITICAL, "Invalid invocation of initializeDB(), table must be set by child class: " + this.getClass().getSimpleName());
             return false;
         }
 
@@ -42,48 +42,53 @@ public class RoundBackObject {
             return false;
         }
 
-        if(db.open()){
-            // we successfully opened the db.
-            // check if the table exists
-            if(db.tableExists(table)){
-                Logger.log(Logger.LOG_LEVEL_DEBUG, "Table " + table + "already exists, skipping.");
-                db.close();
-                return true;
-            }
+        
 
-            HashMap<String, String>fields = new HashMap<String, String>();
-            for( Field f : this.getClass().getDeclaredFields()){
-                
-                // filter out types.
-                String fieldType = f.getType().toString();
-                if(fieldType.equals("class java.lang.String")){
-                    fieldType = "TEXT";
-                } else if (fieldType.equals("int")){
-                    fieldType = "INT";
-                } else {
-                    continue;
-                }
-
-                // filter out names
-                if(f.getName() == "db" || f.getName() == "table"){
-                    continue;
-                }
-
-                // filter out statics and finals
-                if(Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())){
-                    continue;
-                }
-
-                // filter out fields with unsupported types.
-                if(fieldType == "" )
-                    continue;
-
-                fields.put(f.getName(), fieldType);
-            }
+        HashMap<String, String>fields = new HashMap<String, String>();
+        for( Field f : this.getClass().getDeclaredFields()){
             
-            db.createTable(fields);
-            db.close();
+            // filter out types.
+            String fieldType = f.getType().toString();
+            if(fieldType.equals("class java.lang.String")){
+                fieldType = "TEXT";
+            } else if (fieldType.equals("int")){
+                fieldType = "INT";
+            } else {
+                continue;
+            }
+
+            // filter out names
+            if(f.getName() == "db" || f.getName() == "table"){
+                continue;
+            }
+
+            // filter out statics and finals
+            if(Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())){
+                continue;
+            }
+
+            // filter out fields with unsupported types.
+            if(fieldType == "" )
+                continue;
+
+            fields.put(f.getName(), fieldType);
         }
+        if(fields.size() >0){
+            if(db.open()){
+                // we successfully opened the db.
+                // check if the table exists
+                if(db.tableExists(table)){
+                    Logger.log(Logger.LOG_LEVEL_DEBUG, this.getClass().getSimpleName() +  ": Table " + table + " already exists, skipping.");
+                    db.close();
+                    return true;
+                }
+                db.createTable(fields);
+            }
+        } else {
+            Logger.log(Logger.LOG_LEVEL_DEBUG, "Create Table skipped for " + this.getClass().getSimpleName() + ": No Fields");
+        }
+        db.close();
+        
 
         return true;
     }
