@@ -11,6 +11,10 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# vim files
+.*.un~
+*~
+
 # Package Files #
 *.jar
 *.war
