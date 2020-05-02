@@ -10,10 +10,12 @@ public class User extends RoundBackObject{
     private String uname; 
     private String emai; 
     private int isAdmin;
+    private String password;
 
     public User(){
         this.table = "rb_users";
         this.db = new MasterDB(this.table);
     }
+    
     
 }
