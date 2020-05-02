@@ -42,4 +42,19 @@ public class RoundBack {
         }
     }
 
+    public static String getOString(){
+        if(osType == RoundBack.WIN){
+            return "Windows";
+        } else if(osType == RoundBack.MAC){
+            return "MacOS";
+        } else if(osType == RoundBack.NIX) {
+            return "'Nix Type";
+        } else if(osType == RoundBack.OTH) {
+            return "Other (undetectable)";
+        }
+    }
+
+    public static String getFullOString(){
+        return System.getProperty("os.name").toLowerCase();
+    }
 }
