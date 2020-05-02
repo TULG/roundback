@@ -113,7 +113,7 @@ Core Objects (with structure):
         - atime - future: if enabled, access time
         - ctime - future: if enabled, create time
 
-    - Media
+    - StorageMedia
         - uuid - unique identifier for the entry
         - label - name of the piece of media
         - type - type of media
