@@ -16,6 +16,10 @@ public class RoundBack {
     public static int MAC=2;
     public static int OTH=3;
 
+    public static int version_major=0;
+    public static int version_minor=1;
+    public static String version_release="alpha";
+
     // default to master.
     private static int instanceType = RoundBack.MASTER;
     private static int osType = 0;
@@ -49,12 +53,17 @@ public class RoundBack {
             return "MacOS";
         } else if(osType == RoundBack.NIX) {
             return "'Nix Type";
-        } else if(osType == RoundBack.OTH) {
-            return "Other (undetectable)";
         }
+        return "Other (undetectable)";
     }
 
     public static String getFullOString(){
-        return System.getProperty("os.name").toLowerCase();
+        return System.getProperty("os.name");
+    }
+
+    public static String getVersion(){
+        return String.valueOf(RoundBack.version_major) + "." +
+            String.valueOf(RoundBack.version_minor) + "-" +
+            RoundBack.version_release;
     }
 }
