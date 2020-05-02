@@ -1,7 +1,5 @@
 package org.tulg.roundback.master;
 
-
-import org.tulg.roundback.core.Encrypter;
 import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
@@ -9,7 +7,6 @@ import org.tulg.roundback.core.RoundBackConfig;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.*;
 import java.util.*;
 
 /**
@@ -61,19 +58,6 @@ public class MasterProtocol {
                 Logger.log(Logger.LOG_LEVEL_INFO, "Connection to: " + netIOHandler.getClientAddress() + " closed.");
                 closeConnection();
                 return false;
-            // Moved all the complex commands to separate classes.
-            /* XXX: remove
-            case "list":
-                return processListCommand(parser, db);
-            case "backup":
-                return processBackupCommand(parser, db);
-            case "test":
-                return processTestCommand(parser, db);
-            case "register":
-                return processRegisterCommand(parser, db);
-            case "auth":
-                return proecessAuthCommand(parser, db);
-            */
             default:
                 // commands that need to call other objects will be separate classes,
                 // pulled in here.
