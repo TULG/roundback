@@ -23,6 +23,8 @@ class Main {
     public static void main(String[] args) {
         // set the instance type
         RoundBack.setInstanceType(RoundBack.MASTER);
+        Logger.log(Logger.LOG_LEVEL_INFO, "RoundBack Version " + 
+            RoundBack.getVersion() + " on " + RoundBack.getFullOString());
 
         // load the config and parse the commandline.
         RoundBackConfig rBackConfig = new RoundBackConfig();
