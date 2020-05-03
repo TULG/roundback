@@ -15,16 +15,16 @@ public class NetEndpoint extends RoundBackObject {
     public static int STORAGE=1;
     public static int MASTER=2;
 
-    protected String uuid; // unique identifier for the entry
-    protected String hostname ; // the FQDN of this enpoint.
-    protected String ip; // the address of this endopoint.
-    protected String port; // the port this server runs on
-    protected int type; // what type of endpoint is this  
+    protected String rbdbf_uuid; // unique identifier for the entry
+    protected String rbdbf_hostname ; // the FQDN of this enpoint.
+    protected String rbdbf_ip; // the address of this endopoint.
+    protected String rbdbf_port; // the port this server runs on
+    protected int rbdbf_type; // what type of endpoint is this  
 
-    protected String backing_store; // if storage, what backing stores it supports
-    protected boolean enabled; // if this server is enabled or not
-    protected boolean online; // if this server is online or not
-    protected int hb_time; // the last time we recieved a heartbeat from this endpoint
+    protected String rbdbf_backing_store; // if storage, what backing stores it supports
+    protected boolean rbdbf_enabled; // if this server is enabled or not
+    protected boolean rbdbf_online; // if this server is online or not
+    protected int rbdbf_hb_time; // the last time we recieved a heartbeat from this endpoint
 
     public NetEndpoint(){
         this.table = "netendpoints";

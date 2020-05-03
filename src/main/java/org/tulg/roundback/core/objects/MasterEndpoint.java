@@ -12,6 +12,6 @@ public class MasterEndpoint extends NetEndpoint {
 
     public MasterEndpoint(){
         super();
-        this.type = NetEndpoint.MASTER;
+        this.rbdbf_type = NetEndpoint.MASTER;
     }
 }

@@ -6,7 +6,7 @@ public class ClientEndpoint extends NetEndpoint {
 
     public ClientEndpoint () {
         super();
-        this.type = NetEndpoint.CLIENT;
+        this.rbdbf_type = NetEndpoint.CLIENT;
     }
     
 }

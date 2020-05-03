@@ -23,27 +23,27 @@ public class BackupJobSchedule extends RoundBackObject{
    
     // these fields will automagically be added to the db when the table is created.
     // see RoundBackObject class.
-    private String uuid; // unique identifier
-    private String startEveryMinute; // future: cron type scheduling
-    private String startEveryHour; // cron type scheduling, or simple scheduling hour, defaults to 2am
-    private String startEveryDay; // future: cron type scheduling, day of the month
-    private String startEveryMonth; // future: cron type scheduling, month of the year 1:jan through 12:dec
-    private String startEveryWeekday; // future: cron type scheduling, day of the week.
-    private int startEvery; // simple scheduling, from enum
+    private String rbdbf_uuid; // unique identifier
+    private String rbdbf_startEveryMinute; // future: cron type scheduling
+    private String rbdbf_startEveryHour; // cron type scheduling, or simple scheduling hour, defaults to 2am
+    private String rbdbf_startEveryDay; // future: cron type scheduling, day of the month
+    private String rbdbf_startEveryMonth; // future: cron type scheduling, month of the year 1:jan through 12:dec
+    private String rbdbf_startEveryWeekday; // future: cron type scheduling, day of the week.
+    private int rbdbf_startEvery; // simple scheduling, from enum
        
-    private int nextRun; // the server's best guess when next to run this BackupJobSchedule, unix timestamp
-    private int backupType; // the type of backup to run
-    private String hid; // the host id of the client to run for.
+    private int rbdbf_nextRun; // the server's best guess when next to run this BackupJobSchedule, unix timestamp
+    private int rbdbf_backupType; // the type of backup to run
+    private String rbdbf_hid; // the host id of the client to run for.
 
     
     public BackupJobSchedule(){
-        uuid="";
-        startEveryMinute="";
-        startEveryHour="02:00";
-        startEveryDay="";
-        startEveryMonth="";
-        startEveryWeekday = "";
-        startEvery=BackupJobSchedule.SIMPLE_DAILY;
+        rbdbf_uuid="";
+        rbdbf_startEveryMinute="";
+        rbdbf_startEveryHour="02:00";
+        rbdbf_startEveryDay="";
+        rbdbf_startEveryMonth="";
+        rbdbf_startEveryWeekday = "";
+        rbdbf_startEvery=BackupJobSchedule.SIMPLE_DAILY;
         this.table = "backup_job_schedule";
         this.db = new MasterDB(this.table);
 
