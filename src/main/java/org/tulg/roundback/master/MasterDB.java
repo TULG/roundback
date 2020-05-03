@@ -56,7 +56,7 @@ public class MasterDB extends JDBC {
             return false;
         }
         isOpen = true;
-        Logger.log(Logger.LOG_LEVEL_INFO, "Opened database: " + dbPath);
+        Logger.log(Logger.LOG_LEVEL_DEBUG, "Opened database: " + dbPath);
         return true;
     }
 
@@ -71,6 +71,7 @@ public class MasterDB extends JDBC {
             } catch (SQLException e) {
                 // ignore sql exception on close.
             }
+            Logger.log(Logger.LOG_LEVEL_DEBUG, "DB Closed.");
             dbConn = null;
             isOpen = false;
         }
