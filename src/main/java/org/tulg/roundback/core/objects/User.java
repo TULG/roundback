@@ -163,4 +163,5 @@ public class User extends RoundBackObject {
         this.l_isAuthenticated = l_isAuthenticated;
     }
 
+
 }
