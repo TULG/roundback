@@ -46,40 +46,7 @@ public class RoundBackObject {
 
         HashMap<String, String>fields = this.getFieldsFiltered();
         
-        /*new HashMap<String, String>();
-        for( Field f : this.getClass().getDeclaredFields()){
-            
-            // filter out types.
-            String fieldType = f.getType().toString();
-            if(fieldType.equals("class java.lang.String")){
-                fieldType = "TEXT";
-            } else if (fieldType.equals("int")){
-                fieldType = "INT";
-            } else {
-                continue;
-            }
-
-            // filter out names
-            if(f.getName() == "db" || f.getName() == "table"){
-                continue;
-            }
-
-            // filter out locals
-            if(f.getName().startsWith("l_")){
-                continue;
-            }
-
-            // filter out statics and finals
-            if(Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())){
-                continue;
-            }
-
-            // filter out fields with unsupported types.
-            if(fieldType == "" )
-                continue;
-
-            fields.put(f.getName(), fieldType);
-        }*/
+       
         if(fields.size() >0){
             if(db.open()){
                 // we successfully opened the db.
@@ -131,5 +98,11 @@ public class RoundBackObject {
             fields.put(f.getName(), fieldType);
         }
         return fields;
+    }
+
+
+
+    public String getTable(){
+        return this.table;
     }
 }
