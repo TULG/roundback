@@ -23,17 +23,17 @@ public class BackupJobSchedule extends RoundBackObject{
    
     // these fields will automagically be added to the db when the table is created.
     // see RoundBackObject class.
-    private String rbdbf_uuid; // unique identifier
-    private String rbdbf_startEveryMinute; // future: cron type scheduling
-    private String rbdbf_startEveryHour; // cron type scheduling, or simple scheduling hour, defaults to 2am
-    private String rbdbf_startEveryDay; // future: cron type scheduling, day of the month
-    private String rbdbf_startEveryMonth; // future: cron type scheduling, month of the year 1:jan through 12:dec
-    private String rbdbf_startEveryWeekday; // future: cron type scheduling, day of the week.
-    private int rbdbf_startEvery; // simple scheduling, from enum
+    public String rbdbf_uuid; // unique identifier
+    public String rbdbf_startEveryMinute; // future: cron type scheduling
+    public String rbdbf_startEveryHour; // cron type scheduling, or simple scheduling hour, defaults to 2am
+    public String rbdbf_startEveryDay; // future: cron type scheduling, day of the month
+    public String rbdbf_startEveryMonth; // future: cron type scheduling, month of the year 1:jan through 12:dec
+    public String rbdbf_startEveryWeekday; // future: cron type scheduling, day of the week.
+    public int rbdbf_startEvery; // simple scheduling, from enum
        
-    private int rbdbf_nextRun; // the server's best guess when next to run this BackupJobSchedule, unix timestamp
-    private int rbdbf_backupType; // the type of backup to run
-    private String rbdbf_hid; // the host id of the client to run for.
+    public int rbdbf_nextRun; // the server's best guess when next to run this BackupJobSchedule, unix timestamp
+    public int rbdbf_backupType; // the type of backup to run
+    public String rbdbf_hid; // the host id of the client to run for.
 
     
     public BackupJobSchedule(){
