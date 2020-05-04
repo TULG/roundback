@@ -23,6 +23,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.28.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
+    </dependency>
   </dependencies>
 
   <build>

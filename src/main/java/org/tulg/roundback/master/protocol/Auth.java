@@ -4,6 +4,7 @@ package org.tulg.roundback.master.protocol;
 import java.util.StringTokenizer;
 
 import org.tulg.roundback.core.Logger;
+import org.tulg.roundback.core.objects.User;
 import org.tulg.roundback.master.MasterProtocol;
 
 /**
@@ -21,6 +22,12 @@ public class Auth {
      * @return          true to keep the connection open, false to close it. (NOT an error indicator.)
      */
     static public boolean parse (MasterProtocol mp, StringTokenizer parser) {
+        if(!parser.hasMoreTokens()){
+            mp.println("Err: Missing Required Argument");
+            return true;
+
+        }
+        String userName = parser.nextToken().strip();
         if(!parser.hasMoreTokens()){
             mp.println("Err: Missing Required Argument");
             return true;
@@ -46,12 +53,15 @@ public class Auth {
                     return true;
                 }
                 String passwordIn = parser.nextToken();
-
+                User rbUser = new User();
+                
                 // Check the authentication.
-                if(!authenticateAdmin(mp, passwordIn)){
+                if(!rbUser.authenticateUser(userName, passwordIn)){
+                    Logger.log(Logger.LOG_LEVEL_WARN, "Invalid login for " + userName + " from " + mp.getClientAddress());
                     mp.println("Err: Invalid login");
 
                 } else {
+                    Logger.log(Logger.LOG_LEVEL_INFO, "Successful login for " + userName + " from " + mp.getClientAddress());
                     mp.println("OK");
 
                 }
