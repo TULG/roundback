@@ -32,7 +32,7 @@ class MasterCommandLine {
         try {
             commandLine = commandLineParser.parse(options, args);
         } catch (ParseException e) {
-            Logger.log(Logger.LOG_LEVEL_CRITICAL, e.getMessage());
+            Logger.log(Logger.LOG_LEVEL_CRITICAL, e);
             printUsage();
             //e.printStackTrace();
         }

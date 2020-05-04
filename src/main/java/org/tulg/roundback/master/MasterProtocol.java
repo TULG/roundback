@@ -79,7 +79,7 @@ public class MasterProtocol {
                     // ignore this and let it go to the error below.
                     // Log the exception at some point, help debugging poorly written parsers.
                     Logger.log(Logger.LOG_LEVEL_DEBUG, e.getClass().getName() + ": ", false);
-                    Logger.log(Logger.LOG_LEVEL_DEBUG, e.getMessage());
+                    Logger.log(Logger.LOG_LEVEL_DEBUG, e);
                 }
 
                 netIOHandler.println("ERR: Unsupported Command");

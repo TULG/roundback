@@ -71,7 +71,7 @@ class MasterThread implements Runnable {
                 }
 
             } catch (IOException e) {
-                Logger.log(Logger.LOG_LEVEL_CRITICAL, "Exception: " + e.getMessage());
+                Logger.log(Logger.LOG_LEVEL_CRITICAL, e);
                 quitting = true;
             }
 
