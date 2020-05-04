@@ -6,6 +6,6 @@ public class StorageEndpoint extends NetEndpoint {
 
     public StorageEndpoint(){
         super();
-        this.type = NetEndpoint.STORAGE;
+        this.rbdbf_type = NetEndpoint.STORAGE;
     }
 }

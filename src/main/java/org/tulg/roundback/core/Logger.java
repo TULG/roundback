@@ -42,6 +42,31 @@ public class Logger {
         Logger.log(level, message, true);
     }
 
+    /**
+     * Logs an exception at a specific level.  If the level passed higher then the 
+     * logLevel set, the message is surpressed
+     * <p>
+     * Supported levels are:
+     * <ul>
+     * <li> Logger.LOG_LEVEL_CRITICAL=0</li>
+     * <li> Logger.LOG_LEVEL_ERROR=1</li>
+     * <li> Logger.LOG_LEVEL_WARN=2</li>
+     * <li> Logger.LOG_LEVEL_INFO=3</li>
+     * <li>Logger.LOG_LEVEL_DEBUG=4</li>
+     * </ul>
+     * <p>
+     * All methods and fields are static, class is meant to be used statically.
+     * <p>
+     * This instance of the method automatically adds a newline. 
+     *
+     * @param  level        The level to log this message at.
+     * @param  message      The message to log
+     */
+    public static void log(int level, Exception e){
+        String message = e.getClass().getName() + ": " + e.getMessage();
+        Logger.log(level, message);
+    }
+
         /**
      * Logs a message at a specific level.  If the level passed higher then the 
      * logLevel set, the message is surpressed

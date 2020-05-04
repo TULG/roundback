@@ -44,35 +44,9 @@ public class RoundBackObject {
 
         
 
-        HashMap<String, String>fields = new HashMap<String, String>();
-        for( Field f : this.getClass().getDeclaredFields()){
-            
-            // filter out types.
-            String fieldType = f.getType().toString();
-            if(fieldType.equals("class java.lang.String")){
-                fieldType = "TEXT";
-            } else if (fieldType.equals("int")){
-                fieldType = "INT";
-            } else {
-                continue;
-            }
-
-            // filter out names
-            if(f.getName() == "db" || f.getName() == "table"){
-                continue;
-            }
-
-            // filter out statics and finals
-            if(Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())){
-                continue;
-            }
-
-            // filter out fields with unsupported types.
-            if(fieldType == "" )
-                continue;
-
-            fields.put(f.getName(), fieldType);
-        }
+        HashMap<String, String>fields = this.getFieldsFiltered();
+        
+       
         if(fields.size() >0){
             if(db.open()){
                 // we successfully opened the db.
@@ -93,4 +67,42 @@ public class RoundBackObject {
         return true;
     }
 
+    public HashMap<String, String> getFieldsFiltered(){
+        
+        HashMap<String, String>fields = new HashMap<String, String>();
+        for( Field f : this.getClass().getDeclaredFields()){
+            // only include 'rbdbf_' fields
+            if(!f.getName().startsWith("rbdbf_")){
+                continue;
+            }
+
+            // filter out types.
+            String fieldType = f.getType().toString();
+            if(fieldType.equals("class java.lang.String")){
+                fieldType = "TEXT";
+            } else if (fieldType.equals("int")){
+                fieldType = "INT";
+            } else {
+                continue;
+            }
+
+            // filter out statics and finals
+            if(Modifier.isStatic(f.getModifiers()) || Modifier.isFinal(f.getModifiers())){
+                continue;
+            }
+
+            // filter out fields with unsupported types.
+            if(fieldType == "" )
+                continue;
+
+            fields.put(f.getName(), fieldType);
+        }
+        return fields;
+    }
+
+
+
+    public String getTable(){
+        return this.table;
+    }
 }
