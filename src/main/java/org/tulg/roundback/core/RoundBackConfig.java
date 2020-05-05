@@ -10,9 +10,12 @@ public class RoundBackConfig {
     // TODO: Merge all configs to one.
 
     private Preferences preferences;
+    // master conifg
     private String masterPort;
-    private boolean encrypted;
+    private int sessionTimeout;    
 
+
+    // storage conifig
     private String storagePort;
     private int maxThreads;
     private int minDataPort;
@@ -20,10 +23,18 @@ public class RoundBackConfig {
     private int maxImgSize;
     private String backupStorePath;
 
+    // core config
+    private boolean encrypted;
+    private int defaultLogLevel;
+
+
     public RoundBackConfig(){
         preferences = Preferences.userRoot().node("org.tulg.roundback");
+        // master config
         masterPort = preferences.get("master.port", "2377");
-        encrypted = preferences.getBoolean("UseEncryption", true);
+        sessionTimeout = preferences.getInt("master.sessionTimeout", 3600);
+
+        // storage config
         storagePort = preferences.get("storage.port", "2278");
         maxThreads = preferences.getInt("storage.maxThreads", 2);
         minDataPort = preferences.getInt("storage.minDataPort", 50000);
@@ -31,14 +42,17 @@ public class RoundBackConfig {
         maxImgSize = preferences.getInt("storage.maxImgSize", 1024);
         backupStorePath = preferences.get("storage.backupStorePath", System.getProperty("user.home"));
 
-
+        // core config
+        encrypted = preferences.getBoolean("UseEncryption", true);
+        defaultLogLevel = preferences.getInt("core.defaultLogLevel", Logger.LOG_LEVEL_INFO);
     }
 
     public void save (){
                 //  save the current config to prefs
 
         preferences.put("master.port", masterPort);
-        preferences.putBoolean("UseEncryption", encrypted);
+        preferences.putInt("master.sessionTimeout", sessionTimeout);
+
         preferences.put("storage.port", storagePort);
         preferences.putInt("storage.maxThreads", maxThreads);
         preferences.putInt("storage.minDataPort", minDataPort);
@@ -46,6 +60,8 @@ public class RoundBackConfig {
         preferences.putInt("storage.maxImgSize", maxImgSize);
         preferences.putBoolean("storage.UseEncryption", encrypted);
 
+        preferences.putBoolean("UseEncryption", encrypted);
+        preferences.putInt("core.defaultLogLevel", defaultLogLevel);
     }
 
     public String getMasterPort() {
@@ -148,6 +164,23 @@ public class RoundBackConfig {
 
     public void setBackupStorePath(String backupStorePath) {
         this.backupStorePath = backupStorePath;
+    }
+
+
+    public int getSessionTimeout() {
+        return this.sessionTimeout;
+    }
+
+    public void setSessionTimeout(int sessionTimeout) {
+        this.sessionTimeout = sessionTimeout;
+    }
+
+    public int getDefaultLogLevel() {
+        return this.defaultLogLevel;
+    }
+
+    public void setDefaultLogLevel(int defaultLogLevel) {
+        this.defaultLogLevel = defaultLogLevel;
     }
 
 }
