@@ -34,7 +34,8 @@ public class User extends RoundBackObject {
         User tmpUser = this.getUserByUsername(username);
 
         if(tmpUser != null) {
-            if(BCrypt.checkpw(password, tmpUser.getPassword())){
+            String passChk = tmpUser.getPassword();
+            if(BCrypt.checkpw(password, passChk)){
                 // authentication passed
                 this.setEmail(tmpUser.getEmail());
                 this.setName(tmpUser.getName());
@@ -50,7 +51,11 @@ public class User extends RoundBackObject {
 
     public boolean updateUser(String password) {
         if (this.l_isAuthenticated) {
-
+            if(this.getUuid() == null){
+                return false;
+            }
+            db.update("rbdbf_password='" + BCrypt.hashpw(password, BCrypt.gensalt(8)) + "'", "rbdbf_uuid='" + this.getUuid() + "'");
+            return true;
         }
         return false;
     }
@@ -70,6 +75,8 @@ public class User extends RoundBackObject {
         User tmpUser = this.getUserByUUID(adminUUID);
         if(tmpUser != null) {
             // user already exists, no need to recreate.
+            Logger.log(Logger.LOG_LEVEL_DEBUG, "User admin already exists, not adding.");
+            db.close();
             return true;
         }
         this.setUname("admin");
@@ -95,6 +102,7 @@ public class User extends RoundBackObject {
         HashMap<String, String> where = new HashMap<String, String>();
         where.put("rbdbf_uname", userName);
         User tmpUser = (User)db.getItem(where, "User");
+
         return tmpUser;
     }
 

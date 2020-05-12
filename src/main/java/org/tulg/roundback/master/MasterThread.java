@@ -3,6 +3,8 @@ package org.tulg.roundback.master;
 import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
+import org.tulg.roundback.core.objects.NetEndpoint;
+import org.tulg.roundback.core.objects.Session;
 
 import java.io.*;
 import java.net.Socket;
@@ -55,6 +57,10 @@ class MasterThread implements Runnable {
             netIOHandler.setIn(clientSock.getInputStream());
             netIOHandler.setOut(clientSock.getOutputStream());
             netIOHandler.println("RoundBack Master Server");
+            Session cliSession = new Session();
+            String sessID = cliSession.createSession(null);
+            netIOHandler.println("OK sess " + sessID);
+            mProto.setSession(cliSession);
         } catch (IOException e) {
             Logger.log(Logger.LOG_LEVEL_CRITICAL, "Cannot open input stream");
             quitting = true;
