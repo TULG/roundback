@@ -1,7 +1,7 @@
 package org.tulg.roundback.master.protocol;
 
 
-import java.util.StringTokenizer;
+import org.tulg.roundback.core.StringTokenizer;
 
 import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.objects.User;
@@ -36,6 +36,7 @@ public class Auth {
         String subCommand = parser.nextToken();
         switch (subCommand.toLowerCase()) {
             case "check":
+                // TODO: take a session id to check
                 if (mp.isAdminSession()) {
                     mp.println("TRUE");
                 } else {
@@ -63,7 +64,32 @@ public class Auth {
                 } else {
                     Logger.log(Logger.LOG_LEVEL_INFO, "Successful login for " + userName + " from " + mp.getClientAddress());
                     mp.println("OK");
+                    // TODO: Create a session and print the UUID back for the client to use.
+                }
+                return true;
+            case "chpassword":
+                if(!parser.hasMoreTokens()){
+                    mp.println("Err: Missing Required Arguement");
+                    return true;
+                }
+                String passwordIn2 = parser.nextToken();
+                if(!parser.hasMoreTokens()){
+                    mp.println("Err: Missing Required Arguement");
+                    return true;
+                }
+                String passwordNew = parser.nextToken();
+                User rbUser2 = new User();
+                if(!rbUser2.authenticateUser(userName, passwordIn2)){
+                    Logger.log(Logger.LOG_LEVEL_WARN, "Invalid login for " + userName + " from " + mp.getClientAddress());
+                    mp.println("Err: Invalid login");
 
+                } else {
+                    // we autheneticated, so let's update the password
+                    if(rbUser2.updateUser(passwordNew)){
+                        Logger.log(Logger.LOG_LEVEL_INFO, "Password updated for " + userName);
+                        mp.println("OK Please reauth.");
+
+                    }
                 }
                 return true;
 

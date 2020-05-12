@@ -3,11 +3,12 @@ package org.tulg.roundback.master;
 import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
+import org.tulg.roundback.core.StringTokenizer;
+import org.tulg.roundback.core.objects.Session;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * Used to process the incoming/outgoing data to/from the
@@ -22,11 +23,13 @@ public class MasterProtocol {
     private long adminSessionStart = 0;
     private RoundBackConfig rBackConfig;
     private boolean connectionClosing = false;
+    private Session session;
 
     public MasterProtocol(NetIOHandler netIOHandler, RoundBackConfig rBackConfig) {
 
         this.netIOHandler = netIOHandler;
         this.rBackConfig = rBackConfig;
+        this.session = null;
 
     }
 
@@ -49,7 +52,7 @@ public class MasterProtocol {
         }
 
         // split the line into words.
-        StringTokenizer parser = new StringTokenizer(inputLine);
+        StringTokenizer parser = new StringTokenizer(inputLine.trim());
         String command = parser.nextToken();
         // Process incoming commands.
         switch (command.toLowerCase()) {
@@ -58,6 +61,10 @@ public class MasterProtocol {
                 Logger.log(Logger.LOG_LEVEL_INFO, "Connection to: " + netIOHandler.getClientAddress() + " closed.");
                 closeConnection();
                 return false;
+            case "heartbeat":
+                // TODO: lookup ip
+                // TODO: Call update session
+                
             default:
                 // commands that need to call other objects will be separate classes,
                 // pulled in here.
@@ -69,7 +76,14 @@ public class MasterProtocol {
                             + command.substring(0, 1).toUpperCase() + command.substring(1));
                     Method protoMethod = protoCls.getMethod("parse", MasterProtocol.class, StringTokenizer.class);
                     Object protoReturn = protoMethod.invoke(null, this, parser);
-
+                    if((Boolean) protoReturn) {
+                        // parser returned success, let's see if it wants us to try to keep parsing.
+                        if(parser.hasMoreTokens()){
+                            // recurse and lets see what happens.
+                            String str = parser.fromCurrentToken();
+                            return this.process(parser.fromCurrentToken());
+                        }
+                    }
                     // return the result.
                     return (Boolean)protoReturn;
 
@@ -80,6 +94,7 @@ public class MasterProtocol {
                     // Log the exception at some point, help debugging poorly written parsers.
                     Logger.log(Logger.LOG_LEVEL_DEBUG, e.getClass().getName() + ": ", false);
                     Logger.log(Logger.LOG_LEVEL_DEBUG, e);
+                    
                 }
 
                 netIOHandler.println("ERR: Unsupported Command");
@@ -146,6 +161,14 @@ public class MasterProtocol {
         return this;
     }
 
+    public Session getSession(){
+        return session;
+    }
+
+    public void setSession(Session nSession){
+        this.session = nSession;
+    }
+
 
     /**
      * Used to send a line of text back to the client.
@@ -155,6 +178,9 @@ public class MasterProtocol {
      */
     public void println(String line){
         try {
+            if(session != null){
+                line = line + " sess " + this.session.getRbdbf_uuid();
+            }
             netIOHandler.println(line);
         } catch (IOException e) {
             Logger.log(Logger.LOG_LEVEL_DEBUG, "Error sending to client. Closing Connection.");
