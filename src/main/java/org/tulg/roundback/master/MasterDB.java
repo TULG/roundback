@@ -1,7 +1,7 @@
 package org.tulg.roundback.master;
 
+
 import org.sqlite.JDBC;
-//import org.tulg.roundback.core.BackupStatus;
 import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.RoundBackObject;
 
@@ -157,6 +157,7 @@ public class MasterDB extends JDBC {
             List<HashMap<String, Object>> results = null;
             try {
                 results = this.resultSetToArrayList(rs, 3);
+                this.close();
             } catch (SQLException e) {
                 Logger.log(Logger.LOG_LEVEL_DEBUG, "SQL: " + sql);
                 Logger.log(Logger.LOG_LEVEL_CRITICAL, "SQL Error: ");
@@ -269,22 +270,28 @@ public class MasterDB extends JDBC {
 
     }
 
+    public void update(String data, String where){
+        String sql = "UPDATE " + this.table + " SET " + data + " WHERE " + where;
+        this.execute(sql);
+    }
+
     /**
      * Runs a delete on the table.
      * <p>
-     * where arg is also a HashMap of HashMap<String, String> where the first string
-     * is the field, and the second string is the value
+     * where arg is a string representation of the desired where
      *
      * @param where the fields to use in a where clause
      */
-    public void delete(HashMap<String, String> where) {
-
-        if (where.size() < 1) {
+    public void delete(String where) {
+        
+        if (where.equals("") || where == null ) {
             Logger.log(Logger.LOG_LEVEL_WARN, "You passed an empty where to the DB Delete. You probably don't want");
             Logger.log(Logger.LOG_LEVEL_WARN, "to empty the table, so I didn't run the query.  If you did want to");
             Logger.log(Logger.LOG_LEVEL_WARN, "empty the table, you should call deleteAll() instead.");
             return;
         }
+        String sql = "DELETE FROM " + this.table + " WHERE " + where + ";";
+        this.execute(sql);
     }
 
     /**
@@ -316,13 +323,15 @@ public class MasterDB extends JDBC {
                 Logger.log(Logger.LOG_LEVEL_DEBUG, "SQL Statement: " + sql);
                 Logger.log(Logger.LOG_LEVEL_CRITICAL, "Error processing data for db.");
                 Logger.log(Logger.LOG_LEVEL_CRITICAL, e);
+                this.close();
                 return false;
             }
         }
         values = values.substring(0, values.length()-2) + ");";
         sql = sql.substring(0, sql.length()-2) + ") " + values;
-
-        return this.execute(sql);
+        boolean result = this.execute(sql);
+        this.close();
+        return result;
 
     }
 
@@ -399,165 +408,4 @@ public class MasterDB extends JDBC {
         }
         return data;
     }
-/*
-    public ResultSet getHosts(){
-        if(!isOpen){
-            open();
-        }
-        ResultSet rs=null;
-        try {
-            stmt = dbConn.createStatement();
-            rs = stmt.executeQuery("SELECT id,hostname FROM hosts;");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return rs;
-
-    }
-
-    public boolean createBackupSession(String backupUUID, int hostID) {
-        if(!isOpen) {
-            open();
-        }
-        try {
-             long startTime = System.currentTimeMillis() / 1000L;
-             String sql = "INSERT INTO backups (uuid, status, start_time, hid) VALUES('" +
-                     backupUUID + "', '0', '" +
-                     startTime + "', '" + hostID + "')";
-             System.out.println(sql);
-            stmt = dbConn.createStatement();
-            stmt.executeUpdate(sql);
-
-             // TODO: make sure the entry was created.
-
-        } catch (SQLException e ) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    public int getHostId(String remoteHost) {
-        if(!isOpen) {
-            open();
-        }
-        ResultSet rs;
-        try {
-            stmt = dbConn.createStatement();
-            rs = stmt.executeQuery("SELECT id FROM hosts WHERE hostname='" + remoteHost + "';");
-            if(rs.next()) {
-                return rs.getInt("id");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return -1;
-    }
-
-    public ResultSet getBackups() {
-        if(!isOpen){
-            open();
-        }
-        ResultSet rs=null;
-        try {
-            stmt = dbConn.createStatement();
-            rs = stmt.executeQuery("SELECT uuid,hid,status,start_time FROM backups;");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return rs;
-
-
-    }
-
-    public ResultSet getBackups(int hid) {
-        if(!isOpen){
-            open();
-        }
-        ResultSet rs=null;
-        try {
-            stmt = dbConn.createStatement();
-            rs = stmt.executeQuery("SELECT uuid,hid,status,start_time FROM backups WHERE hid=" + hid + ";");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return rs;
-
-
-    }
-
-    public int getBackupStatus(String backupID) {
-        if(!isOpen){
-            open();
-        }
-        ResultSet rs;
-        try {
-            stmt = dbConn.createStatement();
-            rs = stmt.executeQuery("SELECT status FROM backups WHERE uuid='" + backupID + "';");
-            if(rs!=null) {
-                return rs.getInt("status");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
-        return -1;
-    }
-
-    public void setBackupStatus(String backupID, String status) {
-
-        if(!isOpen) {
-            open();
-        }
-        try {
-            String sql = "UPDATE backups SET status='" + status + "' WHERE uuid='" + backupID + "';";
-            System.out.println(sql);
-            stmt = dbConn.createStatement();
-            stmt.executeUpdate(sql);
-
-        } catch (SQLException e ) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void purgeOldBackups(int hid) {
-
-        // set all old backups to status ERROR
-
-        int status = BackupStatus.toInt(BackupStatus.Status.ERROR);
-        if(!isOpen) {
-            open();
-        }
-        try {
-            String sql = "UPDATE backups SET status='" + status + "' WHERE hid='" + hid + "';";
-            System.out.println(sql);
-            stmt = dbConn.createStatement();
-            stmt.executeUpdate(sql);
-
-
-        } catch (SQLException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteBackup(String backupId) {
-        if(!isOpen) {
-            open();
-        }
-        try {
-            String sql = "DELETE FROM backups WHERE uuid='" + backupId + "';";
-            System.out.println(sql);
-            stmt = dbConn.createStatement();
-            stmt.executeUpdate(sql);
-
-
-        } catch (SQLException e ) {
-            e.printStackTrace();
-        }
-    }*/
 }
