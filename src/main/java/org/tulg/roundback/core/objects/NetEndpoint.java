@@ -31,6 +31,9 @@ public class NetEndpoint extends RoundBackObject {
         this.db = new MasterDB(this.table);
     }
 
+	public void getEndpointByIp(String hostAddress) {
+	}
+
     /*
     @Override
     public boolean initializeDB(){
