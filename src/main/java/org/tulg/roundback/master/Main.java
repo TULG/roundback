@@ -24,16 +24,22 @@ class Main {
         // set the instance type
         RoundBack.setInstanceType(RoundBack.MASTER);
         Logger.log(Logger.LOG_LEVEL_INFO, "RoundBack Version " + 
-            RoundBack.getVersion() + " on " + RoundBack.getFullOString());
+        RoundBack.getVersion() + " on " + RoundBack.getFullOString());
 
         // load the config and parse the commandline.
         RoundBackConfig rBackConfig = new RoundBackConfig();
+        MasterCommandLine mc = new MasterCommandLine();
+        mc.parseToConfig(args, rBackConfig);
+        mc=null;
+
+        // set the requested log level
+        Logger.setLogLevel(rBackConfig.getDefaultLogLevel());
         
         // before we start up the network, init the Objects tables in the DB
         Main.initObjects();
 
         // start up the network
-        MasterCommandLine.parseToConfig(args, rBackConfig);
+
         MasterNetwork masterNetwork = new MasterNetwork(rBackConfig);
         masterNetwork.listen();
 
