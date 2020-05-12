@@ -129,7 +129,7 @@ public class Logger {
             }
         }
         if(level <= Logger.logLevel){
-            System.out.print(message);
+            System.out.print(String.format("%s%s", logLevelStr, message));
         }
 
     }

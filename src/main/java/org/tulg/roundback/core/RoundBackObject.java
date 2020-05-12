@@ -80,7 +80,7 @@ public class RoundBackObject {
             String fieldType = f.getType().toString();
             if(fieldType.equals("class java.lang.String")){
                 fieldType = "TEXT";
-            } else if (fieldType.equals("int")){
+            } else if (fieldType.equals("int") || fieldType.equals("long")){
                 fieldType = "INT";
             } else {
                 continue;
