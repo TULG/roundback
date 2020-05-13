@@ -42,6 +42,22 @@ public class Logger {
         Logger.log(level, message, true);
     }
 
+    public static void crit(String message){
+        Logger.log(Logger.LOG_LEVEL_CRITICAL, message, true);
+    }
+    public static void info(String message){
+        Logger.log(Logger.LOG_LEVEL_INFO, message, true);
+    }
+    public static void warn(String message){
+        Logger.log(Logger.LOG_LEVEL_WARN, message, true);
+    }
+    public static void debg(String message){
+        Logger.log(Logger.LOG_LEVEL_DEBUG, message, true);
+    }
+    public static void err(String message){
+        Logger.log(Logger.LOG_LEVEL_ERROR, message, true);
+    }
+    
     /**
      * Logs an exception at a specific level.  If the level passed higher then the 
      * logLevel set, the message is surpressed
@@ -142,4 +158,5 @@ public class Logger {
         Logger.logLevel = logLevel;
 
     }
+
 }
