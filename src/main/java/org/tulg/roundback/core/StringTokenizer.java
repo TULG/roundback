@@ -74,7 +74,7 @@ public class StringTokenizer {
 
     }
 
-    public void end(){
+    public void last(){
         currfield = fields.length + 1;
 
 
