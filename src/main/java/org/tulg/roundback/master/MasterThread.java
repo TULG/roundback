@@ -58,9 +58,8 @@ class MasterThread implements Runnable {
             netIOHandler.setOut(clientSock.getOutputStream());
             netIOHandler.println("RoundBack Master Server");
             Session cliSession = new Session();
-            String sessID = cliSession.createSession(null);
-            netIOHandler.println("OK sess " + sessID);
             mProto.setSession(cliSession);
+            mProto.println("OK");
         } catch (IOException e) {
             Logger.log(Logger.LOG_LEVEL_CRITICAL, "Cannot open input stream");
             quitting = true;
