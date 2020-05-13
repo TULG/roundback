@@ -63,9 +63,15 @@ public class MasterProtocol {
                 closeConnection();
                 return false;
             case "heartbeat":
-                // TODO: lookup ip
-                // TODO: Call update session
-                
+                if(this.checkSession()){
+                    this.getSession().heartbeat();
+                    this.println("OK");
+                    return true;
+                } 
+                this.getSession().deleteSession(this.getSession().getRbdbf_uuid());
+                this.getSession().createSession(null);
+                this.setSession(this.getSession());
+                return true;
             default:
                 // commands that need to call other objects will be separate classes,
                 // pulled in here.
@@ -81,7 +87,6 @@ public class MasterProtocol {
                         // parser returned success, let's see if it wants us to try to keep parsing.
                         if(parser.hasMoreTokens()){
                             // recurse and lets see what happens.
-                            String str = parser.fromCurrentToken();
                             return this.process(parser.fromCurrentToken());
                         }
                     }
@@ -140,6 +145,7 @@ public class MasterProtocol {
     public boolean checkSession(){
         if(session != null ){
             if(session.checkSession()){
+                session.heartbeat();
                 User chkUser = new User();
                 if(chkUser.getUserByUUID(session.getRbdbf_userid())!=null){
                     return true;

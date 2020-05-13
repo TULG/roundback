@@ -36,7 +36,10 @@ public class Session extends RoundBackObject{
 
 
     }
-
+    public void heartbeat(){
+        this.rbdbf_start = Instant.now().toEpochMilli();
+        this.save();
+    }
     public void upateUserSession(String username){
         
     }
@@ -45,7 +48,7 @@ public class Session extends RoundBackObject{
         db.update(
                 "rbdbf_hid='" + this.rbdbf_hid + "', " +
                 "rbdbf_start='" + this.rbdbf_start + "', " +
-                "rbdbf_userid='" + this.rbdbf_userid + "'"
+                "rbdbf_userid='" + this.rbdbf_userid + "' "
                 ,
                 "rbdbf_uuid='" + this.getRbdbf_uuid() + "'");
             
