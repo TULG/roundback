@@ -30,7 +30,8 @@ public class Session extends RoundBackObject{
     public void gcSessions(){
 
         // perform garbage collection on Sessions.
-        String where = "'rbdbf_start' <  " + String.valueOf(Instant.now().getEpochSecond() - this.timeout);
+        long timeout = Instant.now().getEpochSecond() - this.timeout;
+        String where = "rbdbf_start <  " + String.valueOf(Instant.now().getEpochSecond() - this.timeout);
         this.db.delete(where);
 
 
@@ -40,6 +41,16 @@ public class Session extends RoundBackObject{
         
     }
 
+    public boolean save(){
+        db.update(
+                "rbdbf_hid='" + this.rbdbf_hid + "', " +
+                "rbdbf_start='" + this.rbdbf_start + "', " +
+                "rbdbf_userid='" + this.rbdbf_userid + "'"
+                ,
+                "rbdbf_uuid='" + this.getRbdbf_uuid() + "'");
+            
+        return true;
+    }
     public boolean checkSession(String sId){
         gcSessions();
 
@@ -47,12 +58,17 @@ public class Session extends RoundBackObject{
         where.put("rbdbf_uuid", sId);
         Session chkSession = (Session)db.getItem(where, "Session");
         if(chkSession != null) {
-            if(chkSession.rbdbf_uuid == sId) {
+            if(chkSession.rbdbf_uuid.equals(sId)) {
                 return true;
             }
         }
         return false;
     }
+
+    public void deleteSession(String sId) {
+        db.delete("rbdbf_uuid = '" + sId + "'");
+    }
+
 	public String createSession(String hid) {
         gcSessions();
         if(hid == null ){
@@ -118,5 +134,9 @@ public class Session extends RoundBackObject{
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
+
+	public boolean checkSession() {
+		return checkSession(this.rbdbf_uuid);
+	}
     
 }

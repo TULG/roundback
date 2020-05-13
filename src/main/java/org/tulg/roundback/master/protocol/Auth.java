@@ -1,9 +1,9 @@
 package org.tulg.roundback.master.protocol;
 
-
 import org.tulg.roundback.core.StringTokenizer;
 
 import org.tulg.roundback.core.Logger;
+import org.tulg.roundback.core.objects.Session;
 import org.tulg.roundback.core.objects.User;
 import org.tulg.roundback.master.MasterProtocol;
 
@@ -27,31 +27,34 @@ public class Auth {
             return true;
 
         }
-        String userName = parser.nextToken().strip();
-        if(!parser.hasMoreTokens()){
-            mp.println("Err: Missing Required Argument");
-            return true;
-
-        }
+        String userName="";
         String subCommand = parser.nextToken();
         switch (subCommand.toLowerCase()) {
             case "check":
-                // TODO: take a session id to check
-                if (mp.isAdminSession()) {
+                if (mp.checkSession()) {
+                    // got a valid user in our session.
                     mp.println("TRUE");
-                } else {
-                    mp.println("FALSE");
+                    return true;
                 }
+                mp.println("FALSE");
+                mp.getSession().deleteSession(mp.getSession().getRbdbf_uuid());
                 return true;
             case "logout": 
-                mp.adminSession(false);
-                mp.adminSessionStart(0);
+                mp.getSession().deleteSession(mp.getSession().getRbdbf_uuid());
+                mp.setSession(new Session());
                 mp.println("OK");
                 return true;
-            case "password":
+            case "login":
+                
                 if(!parser.hasMoreTokens()){
                     mp.println("Err: Missing Required Arguement");
                     return true;
+                }
+                userName = parser.nextToken().strip();
+                if(!parser.hasMoreTokens()){
+                    mp.println("Err: Missing Required Argument");
+                    return true;
+        
                 }
                 String passwordIn = parser.nextToken();
                 User rbUser = new User();
@@ -62,15 +65,22 @@ public class Auth {
                     mp.println("Err: Invalid login");
 
                 } else {
+                    mp.getSession().setRbdbf_userid(rbUser.getUuid());
+                    mp.getSession().save();
                     Logger.log(Logger.LOG_LEVEL_INFO, "Successful login for " + userName + " from " + mp.getClientAddress());
                     mp.println("OK");
-                    // TODO: Create a session and print the UUID back for the client to use.
                 }
                 return true;
             case "chpassword":
                 if(!parser.hasMoreTokens()){
                     mp.println("Err: Missing Required Arguement");
                     return true;
+                }
+                userName = parser.nextToken().strip();
+                if(!parser.hasMoreTokens()){
+                    mp.println("Err: Missing Required Argument");
+                    return true;
+        
                 }
                 String passwordIn2 = parser.nextToken();
                 if(!parser.hasMoreTokens()){
@@ -95,6 +105,7 @@ public class Auth {
 
             default:
                 mp.println("Err: Unrecognized Sub Command.");
+                parser.last();
 
         }
 

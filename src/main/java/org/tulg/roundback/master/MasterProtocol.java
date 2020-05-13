@@ -5,6 +5,7 @@ import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
 import org.tulg.roundback.core.StringTokenizer;
 import org.tulg.roundback.core.objects.Session;
+import org.tulg.roundback.core.objects.User;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -45,8 +46,8 @@ public class MasterProtocol {
         if(connectionClosing)
             return false;
 
-        if (inputLine.compareTo("") == 0) {
-            netIOHandler.println("OK");
+        if (inputLine.trim().compareTo("") == 0) {
+            this.println("OK");
 
             return true;
         }
@@ -97,7 +98,7 @@ public class MasterProtocol {
                     
                 }
 
-                netIOHandler.println("ERR: Unsupported Command");
+                this.println("ERR: Unsupported Command");
                 netIOHandler.flush();
                 return true;
         }
@@ -133,6 +134,22 @@ public class MasterProtocol {
                 return true;
             }
         }
+        return false;
+    }
+
+    public boolean checkSession(){
+        if(session != null ){
+            if(session.checkSession()){
+                User chkUser = new User();
+                if(chkUser.getUserByUUID(session.getRbdbf_userid())!=null){
+                    return true;
+                }
+            }
+        }
+        // the session no longer exists, invalidate the session
+        session.deleteSession(session.getRbdbf_uuid());
+        session.createSession(null);
+        
         return false;
     }
 
@@ -179,7 +196,11 @@ public class MasterProtocol {
     public void println(String line){
         try {
             if(session != null){
-                line = line + " sess " + this.session.getRbdbf_uuid();
+                if(!session.checkSession()){
+                    session.createSession(null);
+                    this.setSession(session);
+                }
+                line =  "sess " + this.session.getRbdbf_uuid() + " " + line;
             }
             netIOHandler.println(line);
         } catch (IOException e) {

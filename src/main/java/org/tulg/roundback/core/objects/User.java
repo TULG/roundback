@@ -27,7 +27,32 @@ public class User extends RoundBackObject {
         this.l_isAuthenticated = false;
     }
 
-    public boolean authenticateUser(String username, String password) {
+    public User(String infoString) {
+        // Args in order: username, password, email, isadmin(1|0), Full Name
+
+        // parse this into an array.
+        String[] userInfo = infoString.split(", ");
+        this.table = "rb_users";
+        this.db = new MasterDB(this.table);
+        this.l_isAuthenticated = false;
+        try{
+            // see if this user exists.
+            if(this.getUserByUsername(userInfo[0]) != null ){
+                return;
+            }
+            this.rbdbf_uname = userInfo[0];
+            this.rbdbf_password = BCrypt.hashpw(userInfo[1], BCrypt.gensalt(8)); // TODO: Make this salt rounds
+            this.rbdbf_email = userInfo[2];
+            this.rbdbf_isAdmin = Integer.parseInt(userInfo[3]);
+            this.rbdbf_name = userInfo[4];
+            this.rbdbf_uuid = UUID.randomUUID().toString();
+            db.insertIfNotExist(this);
+        }catch(Exception e){
+            Logger.log(Logger.LOG_LEVEL_CRITICAL, e);
+        }
+    }
+
+	public boolean authenticateUser(String username, String password) {
 
         this.l_isAuthenticated = false;
 
@@ -107,8 +132,20 @@ public class User extends RoundBackObject {
     }
 
     public boolean saveUser(){
-
-        return true;
+        if (this.l_isAuthenticated) {
+            if(this.getUuid() == null){
+                return false;
+            }
+            db.update(
+                "rbdbf_email='" + this.rbdbf_email + "'" +
+                "rbdbf_isadmin='" + this.rbdbf_isAdmin + "'" +
+                "rbdbf_name='" + this.rbdbf_name + "'"
+                ,
+                "rbdbf_uuid='" + this.getUuid() + "'");
+            
+            return true;
+        }
+        return false;
     }
 
     public String getUuid() {
@@ -125,6 +162,7 @@ public class User extends RoundBackObject {
 
     public void setName(String name) {
         this.rbdbf_name = name;
+        this.saveUser();
     }
 
     public String getUname() {
@@ -141,6 +179,7 @@ public class User extends RoundBackObject {
 
     public void setEmail(String email) {
         this.rbdbf_email = email;
+        this.saveUser();
     }
 
     public int isAdmin() {
@@ -169,6 +208,14 @@ public class User extends RoundBackObject {
 
     public void setL_isAuthenticated(boolean l_isAuthenticated) {
         this.l_isAuthenticated = l_isAuthenticated;
+    }
+
+	public boolean deleteUser() {
+        if(!this.rbdbf_uuid.equals("")){
+            db.delete("rbdbf_uuid = '"+ this.rbdbf_uuid + "'");
+            return true;
+        }
+        return false;
     }
 
 

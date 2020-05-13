@@ -28,7 +28,7 @@ public class Sess {
         if(!session.checkSession(sId)){
             session.createSession(null);
             mp.setSession(session);
-            mp.println("OK sess " + session.getRbdbf_uuid());
+            
             /*Logger.log(Logger.LOG_LEVEL_DEBUG, "Expired Session, " + sId);
             mp.println("ERR Session Expired, please reconnect");
             return false;*/
