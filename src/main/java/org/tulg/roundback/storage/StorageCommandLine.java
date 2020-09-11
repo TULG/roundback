@@ -1,38 +1,18 @@
 package org.tulg.roundback.storage;
 
 import org.apache.commons.cli.*;
+import org.tulg.roundback.core.CoreCommandLine;
 import org.tulg.roundback.core.RoundBackConfig;
 
 
 /**
  * Created by jasonw on 9/24/2016.
  */
-class StorageCommandLine {
-    private final Options options = new Options();
-    private CommandLine commandLine;
+class StorageCommandLine extends CoreCommandLine {
+    //private final Options options = new Options();
+    //private CommandLine commandLine;
 
-    public StorageCommandLine(String[] args, RoundBackConfig rBackConfig){
-        buildOptions();
-        CommandLineParser commandLineParser = new DefaultParser();
-
-
-        try {
-            commandLine = commandLineParser.parse(options, args);
-        } catch (ParseException e) {
-            System.err.println(e.getMessage());
-            printUsage();
-            //e.printStackTrace();
-        }
-
-        if(commandLine.hasOption("help")) {
-            printUsage();
-        }
-
-        parseToConfig(commandLine, rBackConfig);
-
-    }
-
-    private void parseToConfig(CommandLine commandLine, RoundBackConfig rBackConfig ) {
+    protected void parseToConfig(CommandLine commandLine, RoundBackConfig rBackConfig ) {
         // parse to config
         if(commandLine.hasOption("port")) {
             rBackConfig.setStoragePort(commandLine.getOptionValue("port"));
@@ -50,38 +30,12 @@ class StorageCommandLine {
             rBackConfig.setMinDataPort(Integer.valueOf(commandLine.getOptionValue("minDataPort")));
         }
 
-        if(commandLine.hasOption("UseEncryption")){
-            if(commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("y") == 0 ){
-                rBackConfig.setEncrypted(true);
-            } else {
-                if (commandLine.getOptionValue("UseEncryption").compareToIgnoreCase("n") == 0) {
-                    rBackConfig.setEncrypted(false);
-                } else {
-                    System.err.println("Error: Unrecognized argument to 'UseEncryption'");
-                }
-            }
-        }
-
-        if(commandLine.hasOption("EncryptionKey")){
-            rBackConfig.setEncryptionKey(commandLine.getOptionValue("EncryptionKey"));
-        }
-
-        // XXX: This check should be at the end of this function.
-        if(commandLine.hasOption("save")) {
-                rBackConfig.save();
-        }
-
-
+        // This call should be at the bottom of your paseToConfig
+        super.parseToConfig(commandLine, rBackConfig);
 
     }
 
-    private void printUsage(){
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("storage-server",options);
-        System.exit(1);
-    }
-
-    private void buildOptions() {
+    protected void buildOptions() {
         Option tmpOpt;
 
         tmpOpt = Option.builder("p")
@@ -120,48 +74,37 @@ class StorageCommandLine {
                 .build();
         options.addOption(tmpOpt);
 
-        tmpOpt = Option.builder("e")
-                .longOpt("UseEncryption")
-                .numberOfArgs(1)
-                .required(false)
-                .type(boolean.class)
-                .desc("Should we use encryption")
-                .build();
-        options.addOption(tmpOpt);
-
-        tmpOpt = Option.builder("k")
-                .longOpt("EncryptionKey")
-                .numberOfArgs(1)
-                .required(false)
-                .type(String.class)
-                .desc("Key for Encryption")
-                .build();
-        options.addOption(tmpOpt);
-
-
-        // XXX: Add new option blocks here.
-
-
-        tmpOpt = Option.builder("s")
-                .longOpt("save")
-                .numberOfArgs(0)
-                .required(false)
-                .type(boolean.class)
-                .desc("Save settings to persistent after parsing commandline.")
-                .build();
-        options.addOption(tmpOpt);
-
-        tmpOpt = Option.builder("h")
-                .longOpt("help")
-                .numberOfArgs(0)
-                .required(false)
-                .type(boolean.class)
-                .desc("Print this help page.")
-                .build();
-        options.addOption(tmpOpt);
-
+        // This should be at the bottom of buildOptions()
+        super.buildOptions();
 
     }
+/*     public StorageCommandLine(String[] args, RoundBackConfig rBackConfig){
+        buildOptions();
+        CommandLineParser commandLineParser = new DefaultParser();
 
+
+        try {
+            commandLine = commandLineParser.parse(options, args);
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+            printUsage();
+            //e.printStackTrace();
+        }
+
+        if(commandLine.hasOption("help")) {
+            printUsage();
+        }
+
+        parseToConfig(commandLine, rBackConfig);
+
+    } */
+
+    
+/*     private void printUsage(){
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("storage-server",options);
+        System.exit(1);
+    }
+ */
 
 }

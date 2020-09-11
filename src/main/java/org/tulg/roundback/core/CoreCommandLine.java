@@ -88,7 +88,7 @@ public class CoreCommandLine {
 
     private void printUsage(){
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("master-server",options);
+        formatter.printHelp(RoundBack.getInstanceString(),options);
         System.exit(1);
 
     }

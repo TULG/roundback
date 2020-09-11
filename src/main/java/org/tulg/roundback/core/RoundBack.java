@@ -66,4 +66,17 @@ public class RoundBack {
             String.valueOf(RoundBack.version_minor) + "-" +
             RoundBack.version_release;
     }
+
+    public static String getInstanceString(){
+        if(RoundBack.instanceType == RoundBack.CLIENT){
+            return "roundback-cli";
+        }
+        if(RoundBack.instanceType == RoundBack.MASTER) {
+            return "master-server";
+        }
+        if(RoundBack.instanceType == RoundBack.STORAGE) {
+            return "storage-server";
+        }
+        return "";
+    }
 }
