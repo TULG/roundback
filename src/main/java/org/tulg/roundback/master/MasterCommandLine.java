@@ -21,7 +21,6 @@ class MasterCommandLine extends CoreCommandLine {
         // This call should be at the bottom of your paseToConfig
         super.parseToConfig(commandLine, rBackConfig);
 
-
     }
 
     @Override

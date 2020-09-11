@@ -30,7 +30,8 @@
             "name": "Debug (Launch)-RoundBack-Storage",
             "request": "launch",
             "mainClass": "org.tulg.roundback.storage.Main",
-            "projectName": "roundback"
+            "projectName": "roundback",
+            "args": "-e n -h"
         }
     ]
 }
