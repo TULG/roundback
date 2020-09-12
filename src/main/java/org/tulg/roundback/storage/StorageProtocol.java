@@ -1,24 +1,29 @@
 package org.tulg.roundback.storage;
 
+import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
 
 import java.io.IOException;
-import java.util.StringTokenizer;
+import org.tulg.roundback.core.StringTokenizer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Created by jasonw on 4/26/2017.
  */
-class StorageProtocol {
+public class StorageProtocol {
 
     private NetIOHandler netIOHandler = null;
     private boolean adminSession = false;
     private long adminSessionStart = 0;
     private RoundBackConfig rBackConfig;
+    private boolean connectionClosing = false;
+    private StringTokenizer parser;
 
 
     public StorageProtocol(NetIOHandler netIOHandler) {
-
+     
 
         this.netIOHandler = netIOHandler;
 
@@ -26,7 +31,10 @@ class StorageProtocol {
     }
 
     public boolean process(String inputLine) throws IOException {
-
+        if(connectionClosing){
+            return false;
+        }
+        // TODO: Add in a session check.
         if (inputLine.compareTo("") == 0) {
             netIOHandler.println("OK");
 
@@ -34,76 +42,65 @@ class StorageProtocol {
         }
 
         // split the line into words.
-        StringTokenizer parser = new StringTokenizer(inputLine);
-        String commannd = parser.nextToken();
+        parser = new StringTokenizer(inputLine);
+        String command = parser.nextToken();
         // Process incoming commands.
 
         // bye command
-        switch (commannd.toLowerCase()) {
+        switch (command.toLowerCase()) {
             case "bye":
                 System.out.println("Connection to: " + netIOHandler.getClientAddress() + " closed.");
 
                 return false;
-            case "auth":
-                return proecessAuthCommand(parser);
-            case "store":
-                return processStoreCommand(parser);
-            // XXX: Add new commands here.
+            
             default:
+                // commands that need to call other objects will be separate classes,
+                // pulled in here.
+                try {
+                    // protocol processors should be named "protocolName" where name is the
+                    // top-level
+                    // command to invoke the class for.
+                    Class<?> protoCls = Class.forName("org.tulg.roundback.storage.protocol."
+                            + command.substring(0, 1).toUpperCase() + command.substring(1));
+                    Method protoMethod = protoCls.getMethod("parse", StorageProtocol.class, StringTokenizer.class);
+                    Object protoReturn = protoMethod.invoke(null, this, parser);
+                    if((Boolean) protoReturn) {
+                        // parser returned success, let's see if it wants us to try to keep parsing.
+                        if(parser.hasMoreTokens()){
+                            // recurse and lets see what happens.
+                            return this.process(parser.fromCurrentToken());
+                        }
+                    }
+                    // return the result.
+                    return (Boolean)protoReturn;
+
+                } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
+                        | IllegalArgumentException | InvocationTargetException e) {
+                            
+                    // ignore this and let it go to the error below.
+                    // Log the exception at some point, help debugging poorly written parsers.
+                    Logger.log(Logger.LOG_LEVEL_DEBUG, e.getClass().getName() + ": ", false);
+                    Logger.log(Logger.LOG_LEVEL_DEBUG, e);
+                    
+                }
+
                 netIOHandler.println("ERR: Unsupported Command");
 
         }
         return true;
     }
 
-    private boolean checkForMoreTokens(StringTokenizer parser) throws IOException {
-        if(!parser.hasMoreTokens()){
-            netIOHandler.println("Err: Missing Required Argument");
+    public boolean checkForMoreTokens() {
+        if(this.parser == null){
+            this.println("Err: Parser error");
+            return false;
+        }
+        if(!this.parser.hasMoreTokens()){
+            this.println("Err: Missing Required Argument");
             return false;
         }
         return true;
     }
-
-    private boolean processStoreCommand(StringTokenizer parser) throws IOException {
-        if(!parser.hasMoreTokens()) {
-            netIOHandler.println("Err: Missing Required Argument");
-            return true;
-        }
-        // store command syntax:
-        //      store <backupID> <file|directory> <checksum> <owner> <group> <perms> <timestamp> <full_path_name>
-        String backupID, type, checkSum, owner, group, perms, timestamp, fullPathName;
-        backupID = parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        type=parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        checkSum = parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        owner = parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        group = parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        perms = parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        timestamp = parser.nextToken();
-        if(!checkForMoreTokens(parser))
-            return true;
-        fullPathName = parser.nextToken();
-        // TODO: Store to the DB on master and spawn the receiver thread.
-
-
-        // TODO: after successful insert, spawn the receiver thread.
-        StorageReceiverThread storageReceiverThread = new StorageReceiverThread(netIOHandler.getClientAddress());
-
-
-        return true;
-    }
-
 
     public RoundBackConfig getStorageConfig() {
         return rBackConfig;
@@ -114,77 +111,41 @@ class StorageProtocol {
     }
 
 
-    private boolean proecessAuthCommand(StringTokenizer parser) throws IOException {
-        if(!parser.hasMoreTokens()){
-            netIOHandler.println("Err: Missing Required Argument");
-
-            return true;
-
+    /**
+     * Close the open connection.
+     */
+    private void closeConnection() {
+        netIOHandler.flush();
+        connectionClosing = true;
+    }
+    /**
+     * Used to send a line of text back to the client.
+     * 
+     * @param  line     text to send
+     * 
+     */
+    public void println(String line){
+        try {
+/*             if(session != null){
+                if(!session.checkSession()){
+                    session.createSession(null);
+                    this.setSession(session);
+                }
+                line =  "sess " + this.session.getRbdbf_uuid() + " " + line;
+            } */
+            netIOHandler.println(line);
+        } catch (IOException e) {
+            Logger.log(Logger.LOG_LEVEL_DEBUG, "Error sending to client. Closing Connection.");
+            closeConnection();
         }
-        String subCommand = parser.nextToken();
-        switch (subCommand.toLowerCase()) {
-            case "check":
-                if (isAdminSession()) {
-                    netIOHandler.println("TRUE");
-                } else {
-                    netIOHandler.println("FALSE");
-                }
-                return true;
-            case "password":
-                if(!parser.hasMoreTokens()){
-                    netIOHandler.println("Err: Missing Required Arguement");
-                    return true;
-                }
-                String passwordIn = parser.nextToken();
-                if(!authenticateAdmin(passwordIn)){
-                    netIOHandler.println("Err: Invalid login");
-
-                } else {
-                    netIOHandler.println("OK");
-
-                }
-
-                return true;
-
-            default:
-                netIOHandler.println("Err: Unrecognized Sub Command.");
-
-        }
-
-        return true;
-
-
     }
 
-    public boolean authenticateAdmin(String password) {
-
-        // TODO: For now, admin pass can be the same as encryption key.
-        String key = rBackConfig.getEncryptionKey();
-        if(password.equals(key)) {
-            adminSessionStart = System.currentTimeMillis() / 1000L;
-            adminSession = true;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isAdminSession () {
-        // Check to see if this connection has admin rights.
-        // First check if admin session is true.
-        if(adminSession) {
-            //  check that adminSessionStart + adminSessionLength < now()
-            int adminSessionLength = 60;
-            if(adminSessionStart + adminSessionLength < System.currentTimeMillis() / 1000L ){
-                adminSessionStart = 0;
-                adminSession = false;
-                return false;
-
-            } else {
-                // everything looks ok, so we have an admin session
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Returns the connected client address
+     * @return  a string representing the client's address.
+     */
+    public String getClientAddress(){
+        return netIOHandler.getClientAddress();
     }
 
 }
