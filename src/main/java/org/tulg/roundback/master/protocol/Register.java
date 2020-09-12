@@ -2,6 +2,8 @@ package org.tulg.roundback.master.protocol;
 
 import java.util.StringTokenizer;
 
+import org.tulg.roundback.core.Logger;
+import org.tulg.roundback.core.objects.NetEndpoint;
 import org.tulg.roundback.master.MasterProtocol;
 
 /**
@@ -35,14 +37,25 @@ public class Register {
             return true;
         }
         String regHost = parser.nextToken();
+        NetEndpoint newEndpoint = new NetEndpoint();
         switch (subCommand.toLowerCase()) {
             case "server":
                 // server should always be a storage server
-                mp.println("TODO: register remote as server: " + regHost);
+                if(newEndpoint.registerEndpoint(mp.getClientAddress(), regHost, NetEndpoint.STORAGE)){
+                    return true;
+                } else {
+                    Logger.err("Unable to regisgter host " + regHost);
+                }
+
                 break;
             case "client":
                 // register a client
-                mp.println("TODO: register remote as client: " + regHost);
+                if(newEndpoint.registerEndpoint(mp.getClientAddress(), regHost, NetEndpoint.CLIENT)){
+                    return true;
+                } else {
+                    Logger.err("Unable to regisgter host " + regHost);
+                }
+
                 break;
             default:
                 mp.println("Err: Unknown register type.");

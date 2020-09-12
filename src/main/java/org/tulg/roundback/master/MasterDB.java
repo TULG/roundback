@@ -135,11 +135,12 @@ public class MasterDB extends JDBC {
     }
 
     /**
-     * Runs a query on the server, should return a valid RoundBackObject, so best to
-     * use for SELECT type queries.
+     * Runs a query on the server, should return exactly one valid RoundBackObject
+     * All params are required, errors if multiples are returned.
      *
-     * @param sqlString the query to run
-     * @return RoundBackObject for the query run
+     * @param where a Hash of key/value pairs to look for.
+     * @param objClass the class of this object to map the returned data to
+     * @return RoundBackObject representing the data returned
      */
     public RoundBackObject getItem(HashMap<String, String> where, String objClass) {
         if (where != null) {
