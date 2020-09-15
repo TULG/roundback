@@ -25,6 +25,7 @@ public class Sess {
         }*/
         
         Session session = new Session();
+        session.setTimeout(mp.getRoundBackConfig().getSessionTimeout());
         if(!session.checkSession(sId)){
             session.createSession(null);
             mp.setSession(session);

@@ -23,7 +23,7 @@ public class MasterProtocol {
 
     private NetIOHandler netIOHandler = null;
     private boolean adminSession = false;
-    private long adminSessionStart = 0;
+    //private long adminSessionStart = 0;
     private RoundBackConfig rBackConfig;
     private boolean connectionClosing = false;
     private Session session;
@@ -50,6 +50,7 @@ public class MasterProtocol {
         if(inputLine == null){
             return false;
         }
+        
         if (inputLine.trim().compareTo("") == 0) {
             this.println("OK");
 
@@ -63,6 +64,7 @@ public class MasterProtocol {
         switch (command.toLowerCase()) {
             // commands that directly effect the network communications go here.
             case "bye":
+                this.getSession().destroy();
                 Logger.log(Logger.LOG_LEVEL_INFO, "Connection to: " + netIOHandler.getClientAddress() + " closed.");
                 closeConnection();
                 return false;
@@ -73,7 +75,7 @@ public class MasterProtocol {
                     this.println("OK");
                     return true;
                 } 
-                this.getSession().deleteSession(this.getSession().getRbdbf_uuid());
+                this.getSession().destroy();
                 this.getSession().createSession(null);
                 this.setSession(this.getSession());
                 this.println("Err: Heartbeat didn't find session.");
@@ -132,18 +134,12 @@ public class MasterProtocol {
     public boolean isAdminSession () {
         // Check to see if this connection has admin rights.
         // First check if admin session is true.
+        // make sure the session hasn't expired, we are relying on 
+        // the session timeout here.
+        
+        this.getSession().gcSessions();
         if(adminSession) {
-            //  check that adminSessionStart + adminSessionLength < now()
-            int adminSessionLength = 60;
-            if(adminSessionStart + adminSessionLength < Instant.now().getEpochSecond() ){
-                adminSessionStart = 0;
-                adminSession = false;
-                return false;
-
-            } else {
-                // everything looks ok, so we have an admin session
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -166,7 +162,7 @@ public class MasterProtocol {
             }
         }
         // the session no longer exists, invalidate the session
-        session.deleteSession(session.getRbdbf_uuid());
+        session.destroy();
         session.createSession(null);
         
         return false;
@@ -182,18 +178,8 @@ public class MasterProtocol {
     public boolean getAdminSession() {
         return this.adminSession;
     }
-
-    public long getAdminSessionStart() {
-        return this.adminSessionStart;
-    }
-
     public MasterProtocol adminSession(boolean adminSession) {
         this.adminSession = adminSession;
-        return this;
-    }
-
-    public MasterProtocol adminSessionStart(long adminSessionStart) {
-        this.adminSessionStart = adminSessionStart;
         return this;
     }
 

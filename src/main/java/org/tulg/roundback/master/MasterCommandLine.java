@@ -18,6 +18,10 @@ class MasterCommandLine extends CoreCommandLine {
             rBackConfig.setMasterPort(commandLine.getOptionValue("port"));
         }
 
+        if(commandLine.hasOption("timeout")){
+            rBackConfig.setSessionTimeout(Integer.parseInt(commandLine.getOptionValue("timeout")));
+        }
+
         // This call should be at the bottom of your paseToConfig
         super.parseToConfig(commandLine, rBackConfig);
 
