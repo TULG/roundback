@@ -4,12 +4,14 @@ import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.NetIOHandler;
 import org.tulg.roundback.core.RoundBackConfig;
 import org.tulg.roundback.core.StringTokenizer;
+import org.tulg.roundback.core.objects.NetEndpoint;
 import org.tulg.roundback.core.objects.Session;
 import org.tulg.roundback.core.objects.User;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Instant;
 
 /**
  * Used to process the incoming/outgoing data to/from the
@@ -45,7 +47,9 @@ public class MasterProtocol {
 
         if(connectionClosing)
             return false;
-
+        if(inputLine == null){
+            return false;
+        }
         if (inputLine.trim().compareTo("") == 0) {
             this.println("OK");
 
@@ -63,6 +67,7 @@ public class MasterProtocol {
                 closeConnection();
                 return false;
             case "heartbeat":
+
                 if(this.checkSession()){
                     this.getSession().heartbeat();
                     this.println("OK");
@@ -71,6 +76,7 @@ public class MasterProtocol {
                 this.getSession().deleteSession(this.getSession().getRbdbf_uuid());
                 this.getSession().createSession(null);
                 this.setSession(this.getSession());
+                this.println("Err: Heartbeat didn't find session.");
                 return true;
             default:
                 // commands that need to call other objects will be separate classes,
@@ -129,7 +135,7 @@ public class MasterProtocol {
         if(adminSession) {
             //  check that adminSessionStart + adminSessionLength < now()
             int adminSessionLength = 60;
-            if(adminSessionStart + adminSessionLength < System.currentTimeMillis() / 1000L ){
+            if(adminSessionStart + adminSessionLength < Instant.now().getEpochSecond() ){
                 adminSessionStart = 0;
                 adminSession = false;
                 return false;
@@ -143,13 +149,20 @@ public class MasterProtocol {
     }
 
     public boolean checkSession(){
+        NetEndpoint endpoint = new NetEndpoint();
+        if(!endpoint.getEndpointByIp(this.getClientAddress())){
+            this.println("Err: Not registered. Closing Connection");
+            return false;
+        }
         if(session != null ){
             if(session.checkSession()){
                 session.heartbeat();
+                /* XXX: What's this for?
                 User chkUser = new User();
                 if(chkUser.getUserByUUID(session.getRbdbf_userid())!=null){
                     return true;
-                }
+                } */
+                return true;
             }
         }
         // the session no longer exists, invalidate the session

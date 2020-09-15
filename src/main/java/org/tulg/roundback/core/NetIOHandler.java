@@ -2,6 +2,7 @@ package org.tulg.roundback.core;
 
 import java.io.*;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -137,6 +138,18 @@ public class NetIOHandler {
         } catch (IOException e) {
             throw new IOException("Input Stream Disconnected");
         }
+    }
+
+    public String readLineWithTimeout(int timeout) throws Exception {
+        if(in == null) {
+            throw new IOException("Cannot open input  stream");
+        }
+        while((Instant.now().getEpochSecond() + timeout) > Instant.now().getEpochSecond()) {
+            if(in.ready()){
+                return this.readLine();
+            }
+        }
+        throw new Exception("Timeout");
     }
 
     public void flush() {

@@ -22,6 +22,10 @@ public class RoundBackConfig {
     private int maxDataPort;
     private int maxImgSize;
     private String backupStorePath;
+    private String storageMasterAddress;
+    private String clientMasterAddress;
+    private String storageMasterPort;
+    private String clientMasterPort;
 
     // core config
     private boolean encrypted;
@@ -41,7 +45,13 @@ public class RoundBackConfig {
         maxDataPort = preferences.getInt("storage.maxDataPort", 51000);
         maxImgSize = preferences.getInt("storage.maxImgSize", 1024);
         backupStorePath = preferences.get("storage.backupStorePath", System.getProperty("user.home"));
+        storageMasterAddress = preferences.get("storage.masterAddress", "");
+        storageMasterPort = preferences.get("storage.masterPort", "2377");
 
+        // client config
+        clientMasterAddress = preferences.get("client.masterAddress", "");
+        clientMasterPort = preferences.get("client.masterPort", "2377");
+        
         // core config
         encrypted = preferences.getBoolean("UseEncryption", true);
         defaultLogLevel = preferences.getInt("core.defaultLogLevel", Logger.LOG_LEVEL_INFO);
@@ -182,5 +192,38 @@ public class RoundBackConfig {
     public void setDefaultLogLevel(int defaultLogLevel) {
         this.defaultLogLevel = defaultLogLevel;
     }
+
+    public String getStorageMasterAddress() {
+        return storageMasterAddress;
+    }
+
+    public void setStorageMasterAddress(String storageMasterAddress) {
+        this.storageMasterAddress = storageMasterAddress;
+    }
+
+    public String getClientMasterAddress() {
+        return clientMasterAddress;
+    }
+
+    public void setClientMasterAddress(String clientMasterAddress) {
+        this.clientMasterAddress = clientMasterAddress;
+    }
+
+    public String getStorageMasterPort() {
+        return storageMasterPort;
+    }
+
+    public void setStorageMasterPort(String storageMasterPort) {
+        this.storageMasterPort = storageMasterPort;
+    }
+
+    public String getClientMasterPort() {
+        return clientMasterPort;
+    }
+
+    public void setClientMasterPort(String clientMasterPort) {
+        this.clientMasterPort = clientMasterPort;
+    }
+
 
 }

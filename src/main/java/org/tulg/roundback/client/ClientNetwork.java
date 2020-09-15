@@ -1,96 +1,14 @@
 package org.tulg.roundback.client;
 
-import org.tulg.roundback.core.NetIOHandler;
+import org.tulg.roundback.core.MasterConnection;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 
 /**
  * Created by jasonw on 10/6/2016.
  */
-public class ClientNetwork {
-    private String serverAddress;
-    private String serverPort;
-    private Socket socket;
-    private final NetIOHandler netIOHandler;
-
-    public ClientNetwork(){
-        netIOHandler = new NetIOHandler();
-    }
-
-    public void setEncryption(boolean encryption) {
-        netIOHandler.setEncrypted(encryption);
-    }
-
-    public void setEncryptionKey(String key) {
-        netIOHandler.setEncryptionKey(key);
-    }
-
-    public void setServer(String serverString){
-        //  parse serverString
-        if(serverString.equals("")){
-            this.serverAddress="locahost";
-            this.serverPort="2377";
-            return;
-        }
-        int portSep = serverString.indexOf(':');
-        serverAddress = serverString.substring(0, portSep);
-        serverPort = serverString.substring(portSep+1);
-
-    }
-
-    public void setServer(String serverAddress, String serverPort){
-        this.serverAddress = serverAddress;
-        this.serverPort = serverPort;
-    }
-
-    public boolean connect(){
-        try {
-            socket = new Socket(serverAddress,Integer.parseInt(serverPort));
-            netIOHandler.setIn(socket.getInputStream());
-            netIOHandler.setOut(socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error: Cannot connect to " + serverAddress + ":" + serverPort);
-            return false;
-        }
-
-        return true;
-
-    }
-    public void disconnect(){
-        try {
-            netIOHandler.println("bye");
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendRaw(String rawString) throws IOException {
-        netIOHandler.println(rawString);
-    }
-
-    public String recvRaw() throws IOException, InterruptedException {
-
-        /*// wait for reply...
-        int timer=0;
-        while(!netIOHandler.inReady()){
-                Thread.sleep(1000);
-                timer++;
-                if(timer > 15){
-                    break;
-                }
-
-        }
-        if(netIOHandler.inReady()) {
-        */
-            return netIOHandler.readLine();
-        //}
-
-        //return "";
-    }
+public class ClientNetwork extends MasterConnection {
 
     public ArrayList<String> getHosts(){
         ArrayList<String> tmpArray = new ArrayList<>();

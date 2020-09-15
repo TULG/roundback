@@ -24,7 +24,7 @@ public class Session extends RoundBackObject{
     public Session(){
         this.table = "rb_sessions";
         this.db = new MasterDB(this.table);
-        gcSessions();
+        
     }
 
     public void gcSessions(){
@@ -37,11 +37,12 @@ public class Session extends RoundBackObject{
 
     }
     public void heartbeat(){
+        gcSessions();
         this.rbdbf_start = Instant.now().toEpochMilli();
         this.save();
     }
     public void upateUserSession(String username){
-        
+        gcSessions();
     }
 
     public boolean save(){

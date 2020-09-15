@@ -182,8 +182,8 @@ public class User extends RoundBackObject {
         this.saveUser();
     }
 
-    public int isAdmin() {
-        return this.rbdbf_isAdmin;
+    public boolean isAdmin() {
+        return (this.rbdbf_isAdmin == 1) ? true : false;
     }
 
     public void setIsAdmin(int isAdmin) {

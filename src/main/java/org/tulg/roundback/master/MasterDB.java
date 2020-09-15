@@ -135,19 +135,20 @@ public class MasterDB extends JDBC {
     }
 
     /**
-     * Runs a query on the server, should return a valid RoundBackObject, so best to
-     * use for SELECT type queries.
+     * Runs a query on the server, should return exactly one valid RoundBackObject
+     * All params are required, errors if multiples are returned.
      *
-     * @param sqlString the query to run
-     * @return RoundBackObject for the query run
+     * @param where a Hash of key/value pairs to look for.
+     * @param objClass the class of this object to map the returned data to
+     * @return RoundBackObject representing the data returned
      */
     public RoundBackObject getItem(HashMap<String, String> where, String objClass) {
         if (where != null) {
             String sql = "SELECT * FROM " + this.table + " WHERE ";
             for (Map.Entry<String, String> entry : where.entrySet()) { // .getFieldsFiltered().entrySet()) {
-                sql = sql + entry.getKey() + "='" + entry.getValue() + "', ";
+                sql = sql + entry.getKey() + "='" + entry.getValue() + "' AND ";
             }
-            sql = sql.substring(0, sql.length() - 2) + ";";
+            sql = sql.substring(0, sql.length() - 5) + ";";
             ResultSet rs = this.query(sql);
             if(rs == null) {
                 Logger.log(Logger.LOG_LEVEL_DEBUG, "Empty ResultSet in MasterDB.getItem()");
@@ -329,9 +330,9 @@ public class MasterDB extends JDBC {
         }
         values = values.substring(0, values.length()-2) + ");";
         sql = sql.substring(0, sql.length()-2) + ") " + values;
-        boolean result = this.execute(sql);
+        this.execute(sql);
         this.close();
-        return result;
+        return true;
 
     }
 
