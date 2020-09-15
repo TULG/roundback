@@ -59,6 +59,7 @@ class MasterThread implements Runnable {
             netIOHandler.println("RoundBack Master Server");
             
             Session cliSession = new Session();
+            cliSession.setTimeout(rBackConfig.getSessionTimeout());
             mProto.setSession(cliSession);
             mProto.println("OK");
         } catch (IOException e) {

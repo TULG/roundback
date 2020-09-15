@@ -24,7 +24,6 @@ public class Session extends RoundBackObject{
     public Session(){
         this.table = "rb_sessions";
         this.db = new MasterDB(this.table);
-        
     }
 
     public void gcSessions(){
@@ -71,6 +70,12 @@ public class Session extends RoundBackObject{
 
     public void deleteSession(String sId) {
         db.delete("rbdbf_uuid = '" + sId + "'");
+    }
+
+    public void destroy() {
+        if(this.rbdbf_uuid != ""){
+            this.deleteSession(this.rbdbf_uuid);
+        }
     }
 
 	public String createSession(String hid) {

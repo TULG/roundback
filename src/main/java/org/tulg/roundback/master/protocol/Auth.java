@@ -73,7 +73,7 @@ public class Auth {
                     mp.println("OK");
                     if(rbUser.isAdmin()){
                         mp.adminSession(true);
-                        mp.adminSessionStart(Instant.now().getEpochSecond());
+                       
                     }
                 }
                 return true;
@@ -131,17 +131,17 @@ public class Auth {
      * @param  password the password to check
      * @return              true auth passed, false it failed
      */
-    private static boolean authenticateAdmin(MasterProtocol mp, String password) {
+/*     private static boolean authenticateAdmin(MasterProtocol mp, String password) {
         // TODO: For now, admin pass can be the same as encryption key.
         String key = mp.getRoundBackConfig().getEncryptionKey();
         if(password.equals(key)) {
-            mp.adminSessionStart(System.currentTimeMillis() / 1000L);
+            
             mp.adminSession(true);
             Logger.log(Logger.LOG_LEVEL_INFO, "Accepted Admin Pass from " + mp.getClientAddress());
             return true;
         }
         Logger.log(Logger.LOG_LEVEL_WARN, "Incorrect password from " + mp.getClientAddress());
         return false;
-    }
+    } */
 
 }
