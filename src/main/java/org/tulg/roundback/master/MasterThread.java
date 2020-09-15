@@ -57,6 +57,7 @@ class MasterThread implements Runnable {
             netIOHandler.setIn(clientSock.getInputStream());
             netIOHandler.setOut(clientSock.getOutputStream());
             netIOHandler.println("RoundBack Master Server");
+            
             Session cliSession = new Session();
             mProto.setSession(cliSession);
             mProto.println("OK");

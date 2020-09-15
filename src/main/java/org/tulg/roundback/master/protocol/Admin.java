@@ -24,7 +24,7 @@ public class Admin {
             checkUser = checkUser.getUserByUUID(mp.getSession().getRbdbf_userid());
             if(checkUser != null) {
                 // got a valid user in our session.
-                if(checkUser.isAdmin()==0){
+                if(!checkUser.isAdmin()){
                     // they are not an admin
                     mp.println("Err: Not Authorized");
                     mp.getSession().deleteSession(mp.getSession().getRbdbf_uuid());

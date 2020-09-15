@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.tulg.roundback.core.MasterConnection;
 import org.tulg.roundback.core.RoundBackConfig;
 
 /**
@@ -17,6 +18,8 @@ class StorageNetwork {
     private int port;
     private final boolean quitting;
     private final RoundBackConfig rBackConfig;
+    private MasterConnection mc; 
+    
 
     public StorageNetwork(RoundBackConfig rBackConfig){
         port=2378;
@@ -67,5 +70,13 @@ class StorageNetwork {
                 System.exit(1);
             }
         }
+    }
+
+    public MasterConnection getMasterConnection() {
+        return mc;
+    }
+
+    public void setMasterConnection(MasterConnection mc) {
+        this.mc = mc;
     }
 }

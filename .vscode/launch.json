@@ -12,10 +12,12 @@
         },
         {
             "type": "java",
+
             "name": "Debug (Launch)-RoundBack-Client",
             "request": "launch",
             "mainClass": "org.tulg.roundback.client.Main",
-            "projectName": "roundback"
+            "projectName": "roundback",
+            "args": "-e n"
         },
         {
             "type": "java",
@@ -23,7 +25,7 @@
             "request": "launch",
             "mainClass": "org.tulg.roundback.master.Main",
             "projectName": "roundback",
-            "args": "-e n "
+            "args": "-e n"
         },
         {
             "type": "java",
@@ -31,7 +33,7 @@
             "request": "launch",
             "mainClass": "org.tulg.roundback.storage.Main",
             "projectName": "roundback",
-            "args": "-e n"
+            "args": "-e n -m localhost "
         }
     ]
 }

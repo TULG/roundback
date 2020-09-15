@@ -40,6 +40,7 @@ public class NetEndpoint extends RoundBackObject {
     }
 
     public boolean registerEndpoint(String ipAddress, String hostname, int epType){
+        
         // first let's see if we have a host by this IP and hostname
         HashMap<String, String>where = new HashMap<String,String>();
         where.put("rbdbf_ip", ipAddress);

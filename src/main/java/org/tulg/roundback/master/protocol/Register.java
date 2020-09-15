@@ -1,8 +1,7 @@
 package org.tulg.roundback.master.protocol;
 
-import java.util.StringTokenizer;
-
 import org.tulg.roundback.core.Logger;
+import org.tulg.roundback.core.StringTokenizer;
 import org.tulg.roundback.core.objects.NetEndpoint;
 import org.tulg.roundback.master.MasterProtocol;
 
@@ -24,10 +23,12 @@ public class Register {
     static public boolean parse (MasterProtocol mp, StringTokenizer parser) {
         if(!mp.isAdminSession()) {
             mp.println("Err: NOAUTH: Authentication Required");
+            parser.last();
             return true;
         }
         if(!parser.hasMoreTokens()) {
             mp.println("Err: Missing Required argument");
+            parser.last();
             return true;
         }
 
@@ -36,24 +37,29 @@ public class Register {
             mp.println("Err: Missing Required Argument");
             return true;
         }
+        
         String regHost = parser.nextToken();
         NetEndpoint newEndpoint = new NetEndpoint();
         switch (subCommand.toLowerCase()) {
             case "server":
                 // server should always be a storage server
                 if(newEndpoint.registerEndpoint(mp.getClientAddress(), regHost, NetEndpoint.STORAGE)){
+                    mp.println("OK");
                     return true;
                 } else {
                     Logger.err("Unable to regisgter host " + regHost);
+                    mp.println("Err: Unable to register.");
                 }
 
                 break;
             case "client":
                 // register a client
                 if(newEndpoint.registerEndpoint(mp.getClientAddress(), regHost, NetEndpoint.CLIENT)){
+                    mp.println("OK");
                     return true;
                 } else {
                     Logger.err("Unable to regisgter host " + regHost);
+                    mp.println("Err: Unable to register.");
                 }
 
                 break;

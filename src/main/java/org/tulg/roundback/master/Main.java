@@ -51,6 +51,7 @@ class Main {
      * @return              true on success, false on failure
      */
     private static boolean initObjects() {
+        Logger.debg("Starting initObjects()");
         try {
             // see if we can get an array of our objects
             Class[] classes = Main.getClasses("org.tulg.roundback.core.objects");
@@ -60,6 +61,7 @@ class Main {
                 try {
                     // instantiate
                     String clazzName = initClass.getName();
+                    Logger.debg("Init class " + clazzName);
                     Class<?> clazz = Class.forName(clazzName);
                     Constructor<?> constructor = clazz.getConstructor();
                     initObject = constructor.newInstance((Object[])null);
@@ -82,7 +84,7 @@ class Main {
             Logger.log(Logger.LOG_LEVEL_WARN, "Unable to find any objects.");
             return false;
         }
-
+        Logger.debg("initObjects () Complete");
         return true;
     }
 

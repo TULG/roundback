@@ -146,9 +146,9 @@ public class MasterDB extends JDBC {
         if (where != null) {
             String sql = "SELECT * FROM " + this.table + " WHERE ";
             for (Map.Entry<String, String> entry : where.entrySet()) { // .getFieldsFiltered().entrySet()) {
-                sql = sql + entry.getKey() + "='" + entry.getValue() + "', ";
+                sql = sql + entry.getKey() + "='" + entry.getValue() + "' AND ";
             }
-            sql = sql.substring(0, sql.length() - 2) + ";";
+            sql = sql.substring(0, sql.length() - 5) + ";";
             ResultSet rs = this.query(sql);
             if(rs == null) {
                 Logger.log(Logger.LOG_LEVEL_DEBUG, "Empty ResultSet in MasterDB.getItem()");
@@ -330,9 +330,9 @@ public class MasterDB extends JDBC {
         }
         values = values.substring(0, values.length()-2) + ");";
         sql = sql.substring(0, sql.length()-2) + ") " + values;
-        boolean result = this.execute(sql);
+        this.execute(sql);
         this.close();
-        return result;
+        return true;
 
     }
 

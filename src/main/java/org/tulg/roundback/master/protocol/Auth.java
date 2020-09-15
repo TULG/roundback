@@ -2,6 +2,8 @@ package org.tulg.roundback.master.protocol;
 
 import org.tulg.roundback.core.StringTokenizer;
 
+import java.time.Instant;
+
 import org.tulg.roundback.core.Logger;
 import org.tulg.roundback.core.objects.Session;
 import org.tulg.roundback.core.objects.User;
@@ -69,6 +71,10 @@ public class Auth {
                     mp.getSession().save();
                     Logger.log(Logger.LOG_LEVEL_INFO, "Successful login for " + userName + " from " + mp.getClientAddress());
                     mp.println("OK");
+                    if(rbUser.isAdmin()){
+                        mp.adminSession(true);
+                        mp.adminSessionStart(Instant.now().getEpochSecond());
+                    }
                 }
                 return true;
             case "chpassword":
